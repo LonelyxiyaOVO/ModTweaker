@@ -1,64 +1,25 @@
-/bin/
-/.vscode
-# Forge
-/LICENSE-fml.txt
-/MinecraftForge-Credits.txt
-/MinecraftForge-License.txt
-/README.txt
-/CREDITS-fml.txt
-/forge-1.7.2*
-/logs/*
-/config/*
-/configs/*
-/asm/*
-/saves/*
-/usernamecache.json
-/options.txt
-/minetweaker.log
-/BotaniaVars.dat
-/.analytics/*
-/crash-reports/
-/scripts/*
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-/bin/*
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
 
-# Modproject
-/src/api/resources/*
-/mods/*
+# gradle
+build
+.gradle
 
-# Gradle
-/.gradle
-/build
-/classes/
-# Eclipse
-/.classpath
-/.project
-/.settings
-/bin
-/eclipse/*
-/.metadata
-
-# IntelliJ IDEA
-/*.iml
-/*.ipr
-/*.iws
-/.idea
-/out
-
-# Debugging
-/run
-
-# OS X
-.DS_Store
+# kate
+*.kate-swp
 
 # other
-/.nb-gradle/private/
-/common
-
-*.launch
-
-libs/Thaumcraft-1.12.2-6.1.BETA26-api.zip
-
-secrets.json
-
-changelog.md
+eclipse
+run
