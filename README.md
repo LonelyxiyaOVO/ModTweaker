@@ -130,6 +130,10 @@ API. Recipe removal is applied during the normal ModTweaker late-action phase.
 
 CRT examples by mod
 ----------
+For the structured, BlameJared-style API reference, see
+[docs/CRT_API.md](docs/CRT_API.md). The section below remains a quick-start
+overview with short examples.
+
 The following examples use CRT syntax for the APIs in this project. They are
 intended as copyable starting points; item, fluid and ore names can be replaced
 with entries from the modpack.
