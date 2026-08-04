@@ -1,9 +1,12 @@
 package com.blamejared.reference;
 
+
+import com.blamejared.modtweaker.Tags;
+
 public class Reference {
     
-    public static final String MODID = "modtweaker";
-    public static final String NAME = "Modtweaker";
-    public static final String VERSION = "4.0.19";
+    public static final String MODID = Tags.MOD_ID;
+    public static final String NAME = Tags.MOD_NAME;
+    public static final String VERSION = Tags.VERSION;
     public static final String DEPENDENCIES = "required-after:crafttweaker;required-after:mtlib;before:jei";
 }
