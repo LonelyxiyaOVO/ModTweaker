@@ -42,6 +42,18 @@ public class Pulverizer {
     public static void removeRecipe(IItemStack input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(InputHelper.toStack(input)));
     }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient input) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("Pulverizer", PulverizerManager.class,
+                "getRecipeList", input, false, "getInput"));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("Pulverizer", PulverizerManager.class,
+                "getRecipeList", output, true, "getOutput", "getSecondaryOutput"));
+    }
     
     private static class Add extends BaseAction {
         

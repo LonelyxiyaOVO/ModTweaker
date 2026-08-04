@@ -1,11 +1,14 @@
 package com.blamejared.compat.thermalexpansion.dynamos;
 
+import com.blamejared.compat.RecipeActions;
+import com.blamejared.compat.thermalexpansion.DynamoActions;
 import cofh.thermalexpansion.util.managers.dynamo.NumismaticManager;
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.*;
 
@@ -13,6 +16,14 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class NumisticDynamo {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("NumisticDynamo", () -> {
+            DynamoActions.clear("cofh.thermalexpansion.util.managers.dynamo.NumismaticManager", "fuelMap");
+            DynamoActions.clear("cofh.thermalexpansion.util.managers.dynamo.NumismaticManager", "gemFuelMap");
+        });
+    }
     
     @ZenMethod
     public static void addFuel(IItemStack stack, int energy) {
@@ -22,6 +33,11 @@ public class NumisticDynamo {
     @ZenMethod
     public static void removeFuel(IItemStack stack) {
         ModTweaker.LATE_REMOVALS.add(new Remove(InputHelper.toStack(stack)));
+    }
+
+    @ZenMethod
+    public static void removeFuel(IIngredient input) {
+        for (IItemStack stack : input.getItems()) removeFuel(stack);
     }
     
     @ZenMethod

@@ -18,6 +18,7 @@ import forestry.api.recipes.IFermenterRecipe;
 import forestry.api.recipes.RecipeManagers;
 import forestry.factory.recipes.FermenterRecipe;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
@@ -33,6 +34,11 @@ import static com.blamejared.mtlib.helpers.StackHelper.matches;
 @ModOnly("forestry")
 @ZenRegister
 public class Fermenter {
+    @ZenMethod
+    public static void removeAll() {
+        RegistryHelper.removeAll(name, RecipeManagers.fermenterManager.recipes());
+        RegistryHelper.removeAll(nameFuel, FuelManager.fermenterFuel.entrySet());
+    }
     
     public static final String name = "Forestry Fermenter";
     public static final String nameFuel = name + " (Fuel)";
@@ -78,6 +84,24 @@ public class Fermenter {
     @ZenMethod
     public static void removeRecipe(IIngredient input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(input));
+    }
+
+    @ZenMethod
+    public static void removeByInput(ILiquidStack input) {
+        RecipeRemoval.add(name, RecipeManagers.fermenterManager.recipes(), recipe ->
+                recipe.getFluidResource() != null && matches(input, toILiquidStack(recipe.getFluidResource())), input.toString());
+    }
+
+    @ZenMethod
+    public static void removeByCatalyst(IIngredient catalyst) {
+        RecipeRemoval.add(name, RecipeManagers.fermenterManager.recipes(), recipe ->
+                matches(catalyst, toIItemStack(recipe.getResource())), catalyst.toString());
+    }
+
+    @ZenMethod
+    public static void removeByOutput(ILiquidStack output) {
+        RecipeRemoval.add(name, RecipeManagers.fermenterManager.recipes(), recipe ->
+                matches(output, toILiquidStack(new FluidStack(recipe.getOutput(), 1))), output.toString());
     }
     
     private static class Remove extends BaseRemoveForestry<IFermenterRecipe> {

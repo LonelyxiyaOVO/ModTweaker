@@ -3,6 +3,7 @@ package com.blamejared.compat.botania.handlers;
 import com.blamejared.compat.RecipeActions;
 
 import static com.blamejared.mtlib.helpers.InputHelper.toObjects;
+import static com.blamejared.mtlib.helpers.InputHelper.toObject;
 import static com.blamejared.mtlib.helpers.StackHelper.matches;
 
 import java.util.ArrayList;
@@ -49,6 +50,16 @@ public class ElvenTrade {
     public static void removeRecipe(IIngredient output) {
         ModTweaker.LATE_REMOVALS.add(new Remove(output));
         
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient[] inputs) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByInput(inputs));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInputs(IIngredient[] inputs) {
+        removeRecipeByInput(inputs);
     }
     
     public static IItemStack[] toStacks(ItemStack[] iIngredient) {
@@ -111,6 +122,44 @@ public class ElvenTrade {
         @Override
         public String describe() {
             return "Attempting to remove Elven Trade recipe for " + output.getItems();
+        }
+    }
+
+    private static class RemoveByInput extends BaseListRemoval<RecipeElvenTrade> {
+        private final IIngredient[] inputs;
+
+        RemoveByInput(IIngredient[] inputs) {
+            super(ElvenTrade.name, BotaniaAPI.elvenTradeRecipes, Collections.emptyList());
+            this.inputs = inputs == null ? new IIngredient[0] : inputs;
+        }
+
+        @Override
+        public void apply() {
+            for (RecipeElvenTrade recipe : BotaniaAPI.elvenTradeRecipes) {
+                boolean matches = inputs.length > 0;
+                for (IIngredient input : inputs) {
+                    Object expected = toObject(input);
+                    boolean found = false;
+                    for (Object actual : recipe.getInputs()) {
+                        if (expected instanceof String || actual instanceof String) {
+                            found |= expected.equals(actual);
+                        } else if (actual instanceof ItemStack) {
+                            found |= input.matches(new MCItemStack((ItemStack) actual));
+                        }
+                    }
+                    if (!found) {
+                        matches = false;
+                        break;
+                    }
+                }
+                if (matches) recipes.add(recipe);
+            }
+            super.apply();
+        }
+
+        @Override
+        public String getRecipeInfo(RecipeElvenTrade recipe) {
+            return LogHelper.getStackDescription(recipe.getOutputs());
         }
     }
 }

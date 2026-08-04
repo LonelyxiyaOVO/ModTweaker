@@ -8,6 +8,7 @@ import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.*;
 
@@ -63,6 +64,54 @@ public class Compactor {
     @ZenMethod
     public static void removeGearRecipe(IItemStack input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(InputHelper.toStack(input), CompactorManager.Mode.GEAR));
+    }
+
+    @ZenMethod
+    public static void addRecipe(CompactorManager.Mode mode, IItemStack output, IIngredient input, int energy) {
+        for (IItemStack stack : input.getItems()) {
+            ModTweaker.LATE_ADDITIONS.add(new Add(InputHelper.toStack(output), InputHelper.toStack(stack), energy, mode));
+        }
+    }
+
+    @ZenMethod
+    public static void removeByInput(CompactorManager.Mode mode, IIngredient input) {
+        for (IItemStack stack : input.getItems()) removeByModeInput(mode, stack);
+    }
+
+    @ZenMethod
+    public static void removeByInput(IIngredient input) {
+        for (CompactorManager.Mode mode : CompactorManager.Mode.values()) removeByInput(mode, input);
+    }
+
+    @ZenMethod
+    public static void removeByOutput(CompactorManager.Mode mode, IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(new crafttweaker.IAction() {
+            @Override
+            public void apply() {
+                for (CompactorManager.CompactorRecipe recipe : CompactorManager.getRecipeList(mode)) {
+                    if (output.matches(InputHelper.toIItemStack(recipe.getOutput()))) {
+                        CompactorManager.removeRecipe(recipe.getInput(), mode);
+                    }
+                }
+            }
+
+            @Override
+            public String describe() {
+                return "Removing Compactor " + mode + " recipes by output";
+            }
+        });
+    }
+
+    @ZenMethod
+    public static void removeByOutput(IIngredient output) {
+        for (CompactorManager.Mode mode : CompactorManager.Mode.values()) removeByOutput(mode, output);
+    }
+
+    private static void removeByModeInput(CompactorManager.Mode mode, IItemStack input) {
+        if (mode == CompactorManager.Mode.COIN) removeMintRecipe(input);
+        else if (mode == CompactorManager.Mode.ALL) removePressRecipe(input);
+        else if (mode == CompactorManager.Mode.PLATE) removeStorageRecipe(input);
+        else if (mode == CompactorManager.Mode.GEAR) removeGearRecipe(input);
     }
     
     

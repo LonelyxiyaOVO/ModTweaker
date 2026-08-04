@@ -6,6 +6,7 @@ import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import stanhebben.zenscript.annotations.*;
@@ -19,10 +20,28 @@ public class AlchemyArray {
     public static void addRecipe(IItemStack output, IItemStack input, IItemStack catalyst, @Optional String textureLocation) {
         ModTweaker.LATE_ADDITIONS.add(new Add(InputHelper.toStack(input), InputHelper.toStack(catalyst), InputHelper.toStack(output), textureLocation !=null ? new ResourceLocation(textureLocation) : null));
     }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack output, IIngredient input, IIngredient catalyst, @Optional String textureLocation) {
+        for (IItemStack inputStack : input.getItems()) {
+            for (IItemStack catalystStack : catalyst.getItems()) {
+                addRecipe(output, inputStack, catalystStack, textureLocation);
+            }
+        }
+    }
     
     @ZenMethod
     public static void removeRecipe(IItemStack input, IItemStack catalyst) {
         ModTweaker.LATE_REMOVALS.add(new Remove(InputHelper.toStack(input), InputHelper.toStack(catalyst)));
+    }
+
+    @ZenMethod
+    public static void removeRecipe(IIngredient input, IIngredient catalyst) {
+        for (IItemStack inputStack : input.getItems()) {
+            for (IItemStack catalystStack : catalyst.getItems()) {
+                removeRecipe(inputStack, catalystStack);
+            }
+        }
     }
     
     

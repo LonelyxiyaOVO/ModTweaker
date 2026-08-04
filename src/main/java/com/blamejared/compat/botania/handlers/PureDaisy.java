@@ -79,6 +79,11 @@ public class PureDaisy {
     public static void removeRecipe(IIngredient output) {
         ModTweaker.LATE_REMOVALS.add(new Remove(output));
     }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient input) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveInput(input));
+    }
     
     private static class Add extends BaseListAddition<RecipePureDaisy> {
         
@@ -130,6 +135,29 @@ public class PureDaisy {
         @Override
         public String describe() {
             return "Attempting to remove Pure Daisy recipe for " + output.getItems();
+        }
+    }
+
+    private static class RemoveInput extends Remove {
+        private final IIngredient input;
+
+        RemoveInput(IIngredient input) {
+            super(input);
+            this.input = input;
+        }
+
+        @Override
+        public void apply() {
+            List<RecipePureDaisy> recipes = new LinkedList<>();
+            for (RecipePureDaisy recipe : BotaniaAPI.pureDaisyRecipes) {
+                Object recipeInput = recipe.getInput();
+                if (recipeInput instanceof net.minecraft.block.state.IBlockState
+                        && input.matches(InputHelper.toIItemStack(new ItemStack(((net.minecraft.block.state.IBlockState) recipeInput).getBlock(), 1)))) {
+                    recipes.add(recipe);
+                }
+            }
+            this.recipes.addAll(recipes);
+            super.apply();
         }
     }
 }

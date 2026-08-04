@@ -8,6 +8,7 @@ import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.*;
 
@@ -29,10 +30,27 @@ public class SawMill {
     public static void addRecipe(IItemStack output, IItemStack input, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {
         ModTweaker.LATE_ADDITIONS.add(new Add(InputHelper.toStack(output), InputHelper.toStack(input), energy, InputHelper.toStack(secondaryOutput), secondaryChance));
     }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack output, IIngredient input, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {
+        for (IItemStack stack : input.getItems()) addRecipe(output, stack, energy, secondaryOutput, secondaryChance);
+    }
     
     @ZenMethod
     public static void removeRecipe(IItemStack input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(InputHelper.toStack(input)));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient input) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("SawMill", SawmillManager.class,
+                "getRecipeList", input, false, "getInput"));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("SawMill", SawmillManager.class,
+                "getRecipeList", output, true, "getOutput", "getSecondaryOutput"));
     }
     
     private static class Add extends BaseAction {

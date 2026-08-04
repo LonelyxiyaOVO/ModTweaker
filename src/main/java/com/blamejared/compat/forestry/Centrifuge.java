@@ -28,6 +28,10 @@ import static com.blamejared.mtlib.helpers.StackHelper.matches;
 @ModOnly("forestry")
 @ZenRegister
 public class Centrifuge {
+    @ZenMethod
+    public static void removeAll() {
+        RegistryHelper.removeAll(name, RecipeManagers.centrifugeManager.recipes());
+    }
     
     public static final String name = "Forestry Centrifuge";
     
@@ -71,6 +75,28 @@ public class Centrifuge {
     @ZenMethod
     public static void removeRecipe(IIngredient input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(input));
+    }
+
+    @ZenMethod
+    public static void removeByOutput(IIngredient output) {
+        removeByOutputs(new IIngredient[]{output});
+    }
+
+    @ZenMethod
+    public static void removeByOutputs(IIngredient[] outputs) {
+        RecipeRemoval.add(name, RecipeManagers.centrifugeManager.recipes(), recipe -> {
+            for (IIngredient output : outputs) {
+                boolean found = false;
+                for (ItemStack stack : recipe.getAllProducts().keySet()) {
+                    if (matches(output, toIItemStack(stack))) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return false;
+            }
+            return true;
+        }, java.util.Arrays.toString(outputs));
     }
     
     private static class Remove extends BaseRemoveForestry<ICentrifugeRecipe> {

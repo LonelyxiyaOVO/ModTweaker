@@ -6,6 +6,7 @@ import crafttweaker.annotations.*;
 import crafttweaker.api.oredict.IOreDictEntry;
 import stanhebben.zenscript.annotations.*;
 import vazkii.botania.api.BotaniaAPI;
+import com.blamejared.compat.RecipeActions;
 
 @ZenClass("mods.botania.OrechidIgnem")
 @ModOnly("botania")
@@ -30,6 +31,11 @@ public class OrechidIgnem {
     @ZenMethod
     public static void removeOre(String oreDict) {
         ModTweaker.LATE_REMOVALS.add(new Remove(oreDict));
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("OrechidIgnem", () -> BotaniaAPI.oreWeightsNether.clear());
     }
     
     

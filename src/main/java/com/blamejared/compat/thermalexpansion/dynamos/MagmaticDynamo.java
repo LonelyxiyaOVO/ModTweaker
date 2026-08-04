@@ -1,5 +1,7 @@
 package com.blamejared.compat.thermalexpansion.dynamos;
 
+import com.blamejared.compat.RecipeActions;
+import com.blamejared.compat.thermalexpansion.DynamoActions;
 import cofh.thermalexpansion.util.managers.dynamo.*;
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.*;
@@ -13,6 +15,12 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class MagmaticDynamo {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("MagmaticDynamo", () -> DynamoActions.clear(
+                "cofh.thermalexpansion.util.managers.dynamo.MagmaticManager", "fuelMap"));
+    }
     
     @ZenMethod
     public static void addFuel(ILiquidStack stack, int energy) {

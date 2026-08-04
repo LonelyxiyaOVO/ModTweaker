@@ -1,5 +1,7 @@
 package com.blamejared.compat.thermalexpansion.dynamos;
 
+import com.blamejared.compat.RecipeActions;
+import com.blamejared.compat.thermalexpansion.DynamoActions;
 import cofh.thermalexpansion.util.managers.dynamo.CompressionManager;
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.*;
@@ -13,6 +15,12 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class CompressionDynamo {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("CompressionDynamo", () -> DynamoActions.clear(
+                "cofh.thermalexpansion.util.managers.dynamo.CompressionManager", "fuelMap"));
+    }
     
     @ZenMethod
     public static void addFuel(ILiquidStack stack, int energy) {

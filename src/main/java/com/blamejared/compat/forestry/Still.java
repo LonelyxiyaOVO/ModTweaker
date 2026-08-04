@@ -22,6 +22,10 @@ import static com.blamejared.mtlib.helpers.StackHelper.matches;
 @ModOnly("forestry")
 @ZenRegister
 public class Still {
+    @ZenMethod
+    public static void removeAll() {
+        RegistryHelper.removeAll(name, RecipeManagers.stillManager.recipes());
+    }
     
     public static final String name = "Forestry Still";
     

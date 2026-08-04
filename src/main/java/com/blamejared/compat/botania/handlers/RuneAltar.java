@@ -4,6 +4,7 @@ import com.blamejared.compat.RecipeActions;
 
 import static com.blamejared.mtlib.helpers.InputHelper.toIItemStack;
 import static com.blamejared.mtlib.helpers.InputHelper.toObjects;
+import static com.blamejared.mtlib.helpers.InputHelper.toObject;
 import static com.blamejared.mtlib.helpers.InputHelper.toStack;
 import static com.blamejared.mtlib.helpers.StackHelper.matches;
 
@@ -21,6 +22,7 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
+import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import vazkii.botania.api.BotaniaAPI;
@@ -48,6 +50,16 @@ public class RuneAltar {
     @ZenMethod
     public static void removeRecipe(IIngredient output) {
         ModTweaker.LATE_REMOVALS.add(new Remove(output));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient[] inputs) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByInput(inputs));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInputs(IIngredient[] inputs) {
+        removeRecipeByInput(inputs);
     }
     
     
@@ -102,6 +114,44 @@ public class RuneAltar {
         @Override
         public String describe() {
             return "Attempting to remove Rune Altar recipe for " + output.getItems();
+        }
+    }
+
+    private static class RemoveByInput extends BaseListRemoval<RecipeRuneAltar> {
+        private final IIngredient[] inputs;
+
+        RemoveByInput(IIngredient[] inputs) {
+            super(RuneAltar.name, BotaniaAPI.runeAltarRecipes, Collections.emptyList());
+            this.inputs = inputs == null ? new IIngredient[0] : inputs;
+        }
+
+        @Override
+        public void apply() {
+            for (RecipeRuneAltar recipe : BotaniaAPI.runeAltarRecipes) {
+                boolean matches = true;
+                for (IIngredient input : inputs) {
+                    Object expected = toObject(input);
+                    boolean found = false;
+                    for (Object actual : recipe.getInputs()) {
+                        if (expected instanceof String || actual instanceof String) {
+                            found |= expected.equals(actual);
+                        } else if (actual instanceof ItemStack) {
+                            found |= input.matches(toIItemStack((ItemStack) actual));
+                        }
+                    }
+                    if (!found) {
+                        matches = false;
+                        break;
+                    }
+                }
+                if (matches && inputs.length > 0) recipes.add(recipe);
+            }
+            super.apply();
+        }
+
+        @Override
+        public String getRecipeInfo(RecipeRuneAltar recipe) {
+            return LogHelper.getStackDescription(recipe.getOutput());
         }
     }
 }

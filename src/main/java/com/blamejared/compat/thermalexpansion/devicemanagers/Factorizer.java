@@ -2,10 +2,13 @@ package com.blamejared.compat.thermalexpansion.devicemanagers;
 
 import cofh.thermalexpansion.util.managers.device.FactorizerManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
+import com.blamejared.compat.thermalexpansion.ThermalExpansionReflection;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -16,15 +19,48 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Factorizer {
+
+    @ZenMethod
+    public static void removeByType(boolean split) {
+        ModTweaker.LATE_REMOVALS.add(new IAction() {
+            @Override
+            public void apply() {
+                ThermalExpansionReflection.clear(FactorizerManager.class, split ? "recipeMap" : "recipeMapReverse");
+            }
+
+            @Override
+            public String describe() {
+                return "Removing all Factorizer " + (split ? "split" : "combine") + " recipes";
+            }
+        });
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Factorizer", () -> {
+            ThermalExpansionReflection.clear(FactorizerManager.class, "recipeMap");
+            ThermalExpansionReflection.clear(FactorizerManager.class, "recipeMapReverse");
+        });
+    }
     
     @ZenMethod
     public static void addRecipeSplit(IItemStack in, IItemStack out) {
         ModTweaker.LATE_ADDITIONS.add(new ActionAddFactorizer(ActionAddFactorizer.Type.Split, in, out));
     }
+
+    @ZenMethod
+    public static void addRecipeSplit(IIngredient in, IItemStack out) {
+        for (IItemStack stack : in.getItems()) addRecipeSplit(stack, out);
+    }
     
     @ZenMethod
     public static void addRecipeCombine(IItemStack in, IItemStack out) {
         ModTweaker.LATE_ADDITIONS.add(new ActionAddFactorizer(ActionAddFactorizer.Type.Combine, in, out));
+    }
+
+    @ZenMethod
+    public static void addRecipeCombine(IIngredient in, IItemStack out) {
+        for (IItemStack stack : in.getItems()) addRecipeCombine(stack, out);
     }
     
     @ZenMethod
@@ -36,10 +72,20 @@ public class Factorizer {
     public static void removeRecipeCombine(IItemStack in) {
         ModTweaker.LATE_REMOVALS.add(new ActionRemoveFactorizer(in, false));
     }
+
+    @ZenMethod
+    public static void removeRecipeCombine(IIngredient in) {
+        for (IItemStack stack : in.getItems()) removeRecipeCombine(stack);
+    }
     
     @ZenMethod
     public static void removeRecipeSplit(IItemStack in) {
         ModTweaker.LATE_REMOVALS.add(new ActionRemoveFactorizer(in, true));
+    }
+
+    @ZenMethod
+    public static void removeRecipeSplit(IIngredient in) {
+        for (IItemStack stack : in.getItems()) removeRecipeSplit(stack);
     }
     
     

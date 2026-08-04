@@ -8,6 +8,7 @@ import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.liquid.ILiquidStack;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -17,6 +18,23 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Crucible {
+
+    @ZenMethod
+    public static void addRecipe(ILiquidStack output, IIngredient input, int energy) {
+        for (IItemStack stack : input.getItems()) addRecipe(output, stack, energy);
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient input) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("Crucible", CrucibleManager.class,
+                "getRecipeList", input, false, "getInput"));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("Crucible", CrucibleManager.class,
+                "getRecipeList", output, true, "getOutput"));
+    }
 
     @ZenMethod
     public static void removeAll() {

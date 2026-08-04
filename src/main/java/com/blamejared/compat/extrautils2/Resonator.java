@@ -10,6 +10,7 @@ import com.rwtema.extrautils2.tile.TileResonator;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -38,6 +39,41 @@ public class Resonator {
     @ZenMethod
     public static void remove(IItemStack output) {
         ModTweaker.LATE_REMOVALS.add(new Remove(output));
+    }
+
+    @ZenMethod
+    public static void removeByInput(IIngredient input) {
+        for (IItemStack stack : input.getItems()) {
+            ModTweaker.LATE_REMOVALS.add(new RemoveInput(stack));
+        }
+    }
+
+    private static class RemoveInput extends BaseAction {
+        private final ItemStack input;
+
+        RemoveInput(IItemStack input) {
+            super("Resonator");
+            this.input = InputHelper.toStack(input);
+        }
+
+        @Override
+        public void apply() {
+            java.util.List<IResonatorRecipe> recipes = new java.util.ArrayList<>(TileResonator.resonatorRecipes);
+            for (IResonatorRecipe recipe : recipes) {
+                boolean matches = false;
+                for (ItemStack example : recipe.getInputs()) {
+                    matches |= StackHelper.matches(InputHelper.toIItemStack(input), InputHelper.toIItemStack(example));
+                }
+                if (matches) {
+                    TileResonator.resonatorRecipes.remove(recipe);
+                }
+            }
+        }
+
+        @Override
+        protected String getRecipeInfo() {
+            return LogHelper.getStackDescription(input);
+        }
     }
     
     private static class Add extends BaseAction {

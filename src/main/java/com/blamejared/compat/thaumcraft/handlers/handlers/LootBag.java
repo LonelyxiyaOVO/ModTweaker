@@ -34,7 +34,30 @@ public class LootBag {
             CraftTweakerAPI.logError("Invalid array size (or null) for LootBag!");
             return;
         }
-        ModTweaker.LATE_ADDITIONS.add(new Remove(stack, bagTypes));
+        ModTweaker.LATE_REMOVALS.add(new Remove(stack, bagTypes));
+    }
+
+    @ZenMethod
+    public static void removeAll(int rarity) {
+        ModTweaker.LATE_REMOVALS.add(new BaseAction("LootBag") {
+            @Override
+            public void apply() {
+                ArrayList<WeightedRandomLoot> list;
+                if (rarity == 0) list = WeightedRandomLoot.lootBagCommon;
+                else if (rarity == 1) list = WeightedRandomLoot.lootBagUncommon;
+                else if (rarity == 2) list = WeightedRandomLoot.lootBagRare;
+                else {
+                    CraftTweakerAPI.logError("Invalid bag type! Type: " + rarity + " is out of bounds!");
+                    return;
+                }
+                list.clear();
+            }
+
+            @Override
+            protected String getRecipeInfo() {
+                return "rarity " + rarity;
+            }
+        });
     }
     
     private static class Add extends BaseAction {

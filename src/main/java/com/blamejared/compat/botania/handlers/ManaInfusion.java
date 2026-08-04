@@ -21,6 +21,8 @@ import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.block.IBlockState;
+import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import vazkii.botania.api.BotaniaAPI;
@@ -61,6 +63,16 @@ public class ManaInfusion {
     @ZenMethod
     public static void removeRecipe(IIngredient output) {
         ModTweaker.LATE_REMOVALS.add(new Remove(output));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient input) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByInput(input));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByCatalyst(IBlockState catalyst) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByCatalyst(catalyst));
     }
     
     
@@ -116,5 +128,49 @@ public class ManaInfusion {
         public String describe() {
             return "Attempting to remove mana infusion recipe for " + output.getItems();
         }
+    }
+
+    private static class RemoveByInput extends BaseListRemoval<RecipeManaInfusion> {
+        private final IIngredient input;
+
+        RemoveByInput(IIngredient input) {
+            super(ManaInfusion.name, BotaniaAPI.manaInfusionRecipes, Collections.emptyList());
+            this.input = input;
+        }
+
+        @Override
+        public void apply() {
+            for (RecipeManaInfusion recipe : BotaniaAPI.manaInfusionRecipes) {
+                Object recipeInput = recipe.getInput();
+                boolean matches = recipeInput instanceof ItemStack
+                        ? input.matches(toIItemStack((ItemStack) recipeInput))
+                        : recipeInput instanceof String && recipeInput.equals(toObject(input));
+                if (matches) recipes.add(recipe);
+            }
+            super.apply();
+        }
+
+        @Override
+        public String getRecipeInfo(RecipeManaInfusion recipe) { return LogHelper.getStackDescription(recipe.getOutput()); }
+    }
+
+    private static class RemoveByCatalyst extends BaseListRemoval<RecipeManaInfusion> {
+        private final IBlockState catalyst;
+
+        RemoveByCatalyst(IBlockState catalyst) {
+            super(ManaInfusion.name, BotaniaAPI.manaInfusionRecipes, Collections.emptyList());
+            this.catalyst = catalyst;
+        }
+
+        @Override
+        public void apply() {
+            for (RecipeManaInfusion recipe : BotaniaAPI.manaInfusionRecipes) {
+                if (catalyst.equals(recipe.getCatalyst())) recipes.add(recipe);
+            }
+            super.apply();
+        }
+
+        @Override
+        public String getRecipeInfo(RecipeManaInfusion recipe) { return LogHelper.getStackDescription(recipe.getOutput()); }
     }
 }

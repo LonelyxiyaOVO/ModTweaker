@@ -19,6 +19,8 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
+import crafttweaker.api.minecraft.CraftTweakerMC;
+import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 import vazkii.botania.api.BotaniaAPI;
@@ -54,6 +56,11 @@ public class Brew {
     @ZenMethod
     public static void removeRecipe(String brewName) {
         ModTweaker.LATE_REMOVALS.add(new Remove(brewName));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient[] inputs) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByInput(inputs));
     }
     
     private static class Add extends BaseListAddition<RecipeBrew> {
@@ -106,6 +113,52 @@ public class Brew {
         @Override
         public String describe() {
             return "Attempting to remove brewing recipe for " + brewName;
+        }
+    }
+
+    private static class RemoveByInput extends BaseListRemoval<RecipeBrew> {
+        private final IIngredient[] inputs;
+
+        private RemoveByInput(IIngredient[] inputs) {
+            super(Brew.name, BotaniaAPI.brewRecipes);
+            this.inputs = inputs;
+        }
+
+        @Override
+        public void apply() {
+            List<RecipeBrew> recipes = new LinkedList<>();
+            for(RecipeBrew recipe : BotaniaAPI.brewRecipes) {
+                boolean matches = true;
+                for(IIngredient input : inputs) {
+                    boolean found = false;
+                    for(Object recipeInput : recipe.getInputs()) {
+                        if(recipeInput instanceof String && recipeInput.equals(InputHelper.toObject(input))) {
+                            found = true;
+                        } else if(recipeInput instanceof ItemStack && input.matches(CraftTweakerMC.getIItemStack((ItemStack) recipeInput))) {
+                            found = true;
+                        }
+                    }
+                    if(!found) {
+                        matches = false;
+                        break;
+                    }
+                }
+                if(matches) {
+                    recipes.add(recipe);
+                }
+            }
+            if(!recipes.isEmpty()) {
+                this.recipes.addAll(recipes);
+                super.apply();
+            } else {
+                LogHelper.logWarning(String.format("No %s recipe found for the requested inputs.", Brew.name));
+            }
+            CraftTweakerAPI.getLogger().logInfo(super.describe());
+        }
+
+        @Override
+        protected String getRecipeInfo(RecipeBrew recipe) {
+            return recipe.getBrew().getKey();
         }
     }
 }

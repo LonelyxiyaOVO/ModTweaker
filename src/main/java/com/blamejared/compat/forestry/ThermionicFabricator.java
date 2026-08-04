@@ -28,6 +28,11 @@ import static com.blamejared.mtlib.helpers.StackHelper.matches;
 @ModOnly("forestry")
 @ZenRegister
 public class ThermionicFabricator {
+    @ZenMethod
+    public static void removeAll() {
+        RegistryHelper.removeAll(nameSmelting, RecipeManagers.fabricatorSmeltingManager.recipes());
+        RegistryHelper.removeAll(nameCasting, RecipeManagers.fabricatorManager.recipes());
+    }
     
     public static final String nameSmelting = "Forestry Thermionic Fabricator (Smelting)";
     public static final String nameCasting = "Forestry Thermionic Fabricator (Casting)";
@@ -114,6 +119,36 @@ public class ThermionicFabricator {
     @ZenMethod
     public static void removeCast(IIngredient product) {
         ModTweaker.LATE_REMOVALS.add(new RemoveCasts(product));
+    }
+
+    @ZenMethod
+    public static void removeByFluid(ILiquidStack fluid) {
+        RecipeRemoval.add(nameCasting, RecipeManagers.fabricatorManager.recipes(), recipe ->
+                recipe.getLiquid() != null && matches(fluid, toILiquidStack(recipe.getLiquid())), fluid.toString());
+    }
+
+    @ZenMethod
+    public static void removeByCatalyst(IIngredient catalyst) {
+        RecipeRemoval.add(nameCasting, RecipeManagers.fabricatorManager.recipes(), recipe ->
+                matches(catalyst, toIItemStack(recipe.getPlan())), catalyst.toString());
+    }
+
+    @ZenMethod
+    public static void removeByInput(IIngredient input) {
+        RecipeRemoval.add(nameCasting, RecipeManagers.fabricatorManager.recipes(), recipe -> {
+            for (NonNullList<ItemStack> row : recipe.getIngredients()) {
+                for (ItemStack stack : row) {
+                    if (!stack.isEmpty() && matches(input, toIItemStack(stack))) return true;
+                }
+            }
+            return false;
+        }, input.toString());
+    }
+
+    @ZenMethod
+    public static void removeSmeltingByOutput(ILiquidStack output) {
+        RecipeRemoval.add(nameSmelting, RecipeManagers.fabricatorSmeltingManager.recipes(), recipe ->
+                recipe.getProduct() != null && matches(output, toILiquidStack(recipe.getProduct())), output.toString());
     }
     
     private static class RemoveSmelting extends BaseRemoveForestry<IFabricatorSmeltingRecipe> {

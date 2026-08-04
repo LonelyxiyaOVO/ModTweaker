@@ -2,6 +2,8 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.TransposerManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
+import com.blamejared.compat.thermalexpansion.ThermalExpansionReflection;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
@@ -16,6 +18,37 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Transposer {
+
+    @ZenMethod
+    public static void addExtractRecipe(ILiquidStack output, IIngredient input, int energy, @Optional WeightedItemStack itemOut) {
+        for (IItemStack stack : input.getItems()) addExtractRecipe(output, stack, energy, itemOut);
+    }
+
+    @ZenMethod
+    public static void removeAllExtractRecipes() {
+        RecipeActions.removeAll("Transposer Extract", () -> {
+            ThermalExpansionReflection.clear(TransposerManager.class, "recipeMapExtract");
+            ThermalExpansionReflection.clear(TransposerManager.class, "validationSet");
+        });
+    }
+
+    @ZenMethod
+    public static void removeAllFillRecipes() {
+        RecipeActions.removeAll("Transposer Fill", () -> {
+            ThermalExpansionReflection.clear(TransposerManager.class, "recipeMapFill");
+            ThermalExpansionReflection.clear(TransposerManager.class, "validationSet");
+        });
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Transposer", () -> {
+            ThermalExpansionReflection.clear(TransposerManager.class, "recipeMapExtract");
+            ThermalExpansionReflection.clear(TransposerManager.class, "recipeMapFill");
+            ThermalExpansionReflection.clear(TransposerManager.class, "containerOverrides");
+            ThermalExpansionReflection.clear(TransposerManager.class, "validationSet");
+        });
+    }
     
     @ZenMethod
     public static void addExtractRecipe(ILiquidStack output, IItemStack input, int energy, @Optional WeightedItemStack itemOut) {
@@ -33,6 +66,32 @@ public class Transposer {
     public static void removeExtractRecipe(IItemStack input) {
         ModTweaker.LATE_REMOVALS.add(new RemoveExtract(InputHelper.toStack(input)));
     }
+
+    @ZenMethod
+    public static void removeExtractRecipe(IIngredient input) {
+        for (IItemStack stack : input.getItems()) removeExtractRecipe(stack);
+    }
+
+    @ZenMethod
+    public static void removeExtractRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(new crafttweaker.IAction() {
+            @Override
+            public void apply() {
+                java.util.Map<?, ?> recipes = (java.util.Map<?, ?>) ThermalExpansionReflection.get(TransposerManager.class, "recipeMapExtract");
+                for (Object recipe : new java.util.ArrayList<>(recipes.values())) {
+                    Object fluid = invoke(recipe, "getOutputFluid");
+                    Object item = invoke(recipe, "getOutputItem");
+                    if ((fluid instanceof FluidStack && output.matches(InputHelper.toILiquidStack((FluidStack) fluid)))
+                            || (item instanceof ItemStack && output.matches(InputHelper.toIItemStack((ItemStack) item)))) {
+                        TransposerManager.removeExtractRecipe((ItemStack) invoke(recipe, "getInput"));
+                    }
+                }
+            }
+
+            @Override
+            public String describe() { return "Removing Transposer extract recipes by output"; }
+        });
+    }
     
     @ZenMethod
     public static void addFillRecipe(IItemStack output, IItemStack input, ILiquidStack fluid, int energy) {
@@ -42,6 +101,45 @@ public class Transposer {
     @ZenMethod
     public static void removeFillRecipe(IItemStack input, ILiquidStack fluid) {
         ModTweaker.LATE_REMOVALS.add(new RemoveFill(InputHelper.toStack(input), InputHelper.toFluid(fluid)));
+    }
+
+    @ZenMethod
+    public static void addFillRecipe(IItemStack output, IIngredient input, ILiquidStack fluid, int energy) {
+        for (IItemStack stack : input.getItems()) addFillRecipe(output, stack, fluid, energy);
+    }
+
+    @ZenMethod
+    public static void removeFillRecipe(IIngredient input, ILiquidStack fluid) {
+        for (IItemStack stack : input.getItems()) removeFillRecipe(stack, fluid);
+    }
+
+    @ZenMethod
+    public static void removeFillRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(new crafttweaker.IAction() {
+            @Override
+            public void apply() {
+                java.util.Map<?, ?> recipes = (java.util.Map<?, ?>) ThermalExpansionReflection.get(TransposerManager.class, "recipeMapFill");
+                for (Object recipe : new java.util.ArrayList<>(recipes.values())) {
+                    Object item = invoke(recipe, "getOutput");
+                    if (item instanceof ItemStack && output.matches(InputHelper.toIItemStack((ItemStack) item))) {
+                        TransposerManager.removeFillRecipe((ItemStack) invoke(recipe, "getInput"), (FluidStack) invoke(recipe, "getFluidInput"));
+                    }
+                }
+            }
+
+            @Override
+            public String describe() { return "Removing Transposer fill recipes by output"; }
+        });
+    }
+
+    private static Object invoke(Object recipe, String name) {
+        try {
+            java.lang.reflect.Method method = recipe.getClass().getMethod(name);
+            method.setAccessible(true);
+            return method.invoke(recipe);
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
     }
     
     private static class AddExtract extends BaseAction {

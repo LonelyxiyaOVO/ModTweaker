@@ -7,6 +7,7 @@ import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.liquid.ILiquidStack;
 import knightminer.tcomplement.library.TCompRegistry;
 import knightminer.tcomplement.library.events.TCompRegisterEvent;
@@ -40,11 +41,43 @@ public class Blacklist {
         init();
         ModTweaker.LATE_ADDITIONS.add(new Blacklist.Add(InputHelper.toFluid(output), InputHelper.toStack(input)));
     }
+
+    @ZenMethod
+    public static void addRecipe(ILiquidStack output, IIngredient input) {
+        for (IItemStack stack : input.getItems()) addRecipe(output, stack);
+    }
     
     @ZenMethod
     public static void removeRecipe(IItemStack input) {
         init();
         CraftTweakerAPI.apply(new Blacklist.Remove(input));
+    }
+
+    @ZenMethod
+    public static void removeRecipe(IIngredient input) {
+        for (IItemStack stack : input.getItems()) removeRecipe(stack);
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        init();
+        ModTweaker.LATE_REMOVALS.add(new BaseAction("Tinkers Complement Blacklist") {
+            @Override
+            public void apply() {
+                try {
+                    java.lang.reflect.Field field = TCompRegistry.class.getDeclaredField("meltingBlacklist");
+                    field.setAccessible(true);
+                    ((java.util.List<?>) field.get(null)).clear();
+                } catch (ReflectiveOperationException e) {
+                    throw new IllegalStateException("Unable to clear Tinkers Complement melting blacklist", e);
+                }
+            }
+
+            @Override
+            protected String getRecipeInfo() {
+                return "all melting blacklist entries";
+            }
+        });
     }
     
     private static class Add extends BaseAction {

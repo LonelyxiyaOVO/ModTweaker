@@ -25,6 +25,10 @@ import static com.blamejared.mtlib.helpers.StackHelper.matches;
 @ModOnly("forestry")
 @ZenRegister
 public class Squeezer {
+    @ZenMethod
+    public static void removeAll() {
+        RegistryHelper.removeAll(name, RecipeManagers.squeezerManager.recipes());
+    }
     
     public static final String name = "Forestry Squeezer";
     
@@ -41,6 +45,24 @@ public class Squeezer {
     @ZenMethod
     public static void addRecipe(ILiquidStack fluidOutput, IItemStack[] ingredients, int timePerItem, @Optional WeightedItemStack itemOutput) {
         ModTweaker.LATE_ADDITIONS.add(new Add(new SqueezerRecipe(timePerItem, toNonNullList(toStacks(ingredients)), toFluid(fluidOutput), itemOutput != null ? toStack(itemOutput.getStack()) : ItemStack.EMPTY, itemOutput != null ? itemOutput.getChance() : 0)));
+    }
+
+    @ZenMethod
+    public static void addRecipe(ILiquidStack fluidOutput, IIngredient[] ingredients, int timePerItem, @Optional WeightedItemStack itemOutput) {
+        java.util.List<IItemStack[]> combinations = new java.util.ArrayList<>();
+        expand(ingredients, 0, new IItemStack[ingredients.length], combinations);
+        for (IItemStack[] combination : combinations) addRecipe(fluidOutput, combination, timePerItem, itemOutput);
+    }
+
+    private static void expand(IIngredient[] ingredients, int index, IItemStack[] current, java.util.List<IItemStack[]> result) {
+        if (index == ingredients.length) {
+            result.add(current.clone());
+            return;
+        }
+        for (IItemStack stack : ingredients[index].getItems()) {
+            current[index] = stack;
+            expand(ingredients, index + 1, current, result);
+        }
     }
     
     private static class Add extends BaseAddForestry<ISqueezerRecipe> {
@@ -66,6 +88,28 @@ public class Squeezer {
     @ZenMethod
     public static void removeRecipe(ILiquidStack liquid, @Optional IIngredient[] ingredients) {
         ModTweaker.LATE_REMOVALS.add(new Remove(liquid, ingredients));
+    }
+
+    @ZenMethod
+    public static void removeByOutput(ILiquidStack output) {
+        RecipeRemoval.add(name, RecipeManagers.squeezerManager.recipes(), recipe ->
+                matches(output, toILiquidStack(recipe.getFluidOutput())), output.toString());
+    }
+
+    @ZenMethod
+    public static void removeByInput(IIngredient[] inputs) {
+        removeByInputs(inputs);
+    }
+
+    @ZenMethod
+    public static void removeByInputs(IIngredient[] inputs) {
+        RecipeRemoval.add(name, RecipeManagers.squeezerManager.recipes(), recipe -> {
+            if (recipe.getResources().size() != inputs.length) return false;
+            for (int i = 0; i < inputs.length; i++) {
+                if (!matches(inputs[i], toIItemStack(recipe.getResources().get(i)))) return false;
+            }
+            return true;
+        }, java.util.Arrays.toString(inputs));
     }
     
     private static class Remove extends BaseRemoveForestry<ISqueezerRecipe> {

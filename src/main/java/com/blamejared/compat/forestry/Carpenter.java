@@ -22,11 +22,16 @@ import stanhebben.zenscript.annotations.ZenMethod;
 import java.util.Arrays;
 
 import static com.blamejared.mtlib.helpers.InputHelper.*;
+import static com.blamejared.mtlib.helpers.StackHelper.matches;
 
 @ZenClass("mods.forestry.Carpenter")
 @ModOnly("forestry")
 @ZenRegister
 public class Carpenter {
+    @ZenMethod
+    public static void removeAll() {
+        RegistryHelper.removeAll(name, RecipeManagers.carpenterManager.recipes());
+    }
     
     public static final String name = "Forestry Carpenter";
     
@@ -83,6 +88,33 @@ public class Carpenter {
     @ZenMethod
     public static void removeRecipe(IItemStack output, @Optional ILiquidStack fluidInput) {
         ModTweaker.LATE_REMOVALS.add(new Remove(output, fluidInput));
+    }
+
+    @ZenMethod
+    public static void removeByFluidInput(ILiquidStack fluidInput) {
+        RecipeRemoval.add(name, RecipeManagers.carpenterManager.recipes(), recipe ->
+                recipe.getFluidResource() != null && matches(fluidInput, toILiquidStack(recipe.getFluidResource())), fluidInput.toString());
+    }
+
+    @ZenMethod
+    public static void removeByBox(IIngredient box) {
+        RecipeRemoval.add(name, RecipeManagers.carpenterManager.recipes(), recipe ->
+                matches(box, toIItemStack(recipe.getBox())), box.toString());
+    }
+
+    @ZenMethod
+    public static void removeByInput(IIngredient[] inputs) {
+        RecipeRemoval.add(name, RecipeManagers.carpenterManager.recipes(), recipe -> {
+            ItemStack[][] raw = recipe.getCraftingGridRecipe().getRawIngredients().stream()
+                    .map(list -> list.toArray(new ItemStack[0])).toArray(ItemStack[][]::new);
+            for (IIngredient input : inputs) {
+                boolean found = false;
+                for (ItemStack[] row : raw) for (ItemStack stack : row)
+                    if (!stack.isEmpty() && matches(input, toIItemStack(stack))) found = true;
+                if (!found) return false;
+            }
+            return true;
+        }, java.util.Arrays.toString(inputs));
     }
     
     private static class Remove extends BaseRemoveForestry<ICarpenterRecipe> {

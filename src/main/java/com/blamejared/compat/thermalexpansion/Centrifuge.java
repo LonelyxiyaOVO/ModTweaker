@@ -21,6 +21,7 @@ import cofh.thermalfoundation.init.TFFluids;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 
 @ZenClass("mods.thermalexpansion.Centrifuge")
 @ModOnly("thermalexpansion")
@@ -51,6 +52,11 @@ public class Centrifuge {
     }
 
     @ZenMethod
+    public static void addRecipe(WeightedItemStack[] outputs, IIngredient input, ILiquidStack fluid, int energy) {
+        for (IItemStack stack : input.getItems()) addRecipe(outputs, stack, fluid, energy);
+    }
+
+    @ZenMethod
     public static void addRecipeMob(String entityId, WeightedItemStack[] outputs, ILiquidStack fluid, int energy, int xp) {
         IItemStack[] items = new IItemStack[outputs.length];
         Integer[] chances = new Integer[outputs.length];
@@ -78,6 +84,11 @@ public class Centrifuge {
     }
 
     @ZenMethod
+    public static void removeRecipe(IIngredient input) {
+        for (IItemStack stack : input.getItems()) removeRecipe(stack);
+    }
+
+    @ZenMethod
     public static void removeRecipeMob(String entityId) {
         ModTweaker.LATE_REMOVALS.add(new RemoveMob(entityId));
     }
@@ -85,6 +96,16 @@ public class Centrifuge {
     @ZenMethod
     public static void removeRecipeMob(IEntityDefinition entity) {
         ModTweaker.LATE_REMOVALS.add(new RemoveMob(entity.getId()));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByOutput(output, false));
+    }
+
+    @ZenMethod
+    public static void removeRecipeMobByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveByOutput(output, true));
     }
     
     private static class Add extends BaseAction {
@@ -224,6 +245,42 @@ public class Centrifuge {
         @Override
         protected String getRecipeInfo() {
             return entityId;
+        }
+    }
+
+    private static class RemoveByOutput extends BaseAction {
+        private final IIngredient output;
+        private final boolean mobs;
+
+        private RemoveByOutput(IIngredient output, boolean mobs) {
+            super("Centrifuge");
+            this.output = output;
+            this.mobs = mobs;
+        }
+
+        @Override
+        public void apply() {
+            List<CentrifugeManager.CentrifugeRecipe> recipes = new ArrayList<>();
+            CentrifugeManager.CentrifugeRecipe[] source = mobs
+                    ? CentrifugeManager.getRecipeListMobs()
+                    : CentrifugeManager.getRecipeList();
+            for(CentrifugeManager.CentrifugeRecipe recipe : source) {
+                if(recipe.getOutput().stream().anyMatch(stack -> output.matches(InputHelper.toIItemStack(stack)))) {
+                    recipes.add(recipe);
+                }
+            }
+            for(CentrifugeManager.CentrifugeRecipe recipe : recipes) {
+                if(mobs) {
+                    CentrifugeManager.removeRecipeMob(recipe.getInput());
+                } else {
+                    CentrifugeManager.removeRecipe(recipe.getInput());
+                }
+            }
+        }
+
+        @Override
+        protected String getRecipeInfo() {
+            return output.toString();
         }
     }
 }

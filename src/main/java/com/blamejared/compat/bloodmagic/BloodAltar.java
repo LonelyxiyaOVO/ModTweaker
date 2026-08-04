@@ -6,6 +6,7 @@ import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import stanhebben.zenscript.annotations.*;
@@ -19,10 +20,22 @@ public class BloodAltar {
     public static void addRecipe(IItemStack output, IItemStack input, int minimumTier, int syphon, int consumeRate, int drainRate) {
         ModTweaker.LATE_ADDITIONS.add(new Add(Ingredient.fromStacks(InputHelper.toStack(input)), InputHelper.toStack(output), minimumTier, syphon, consumeRate, drainRate));
     }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack output, IIngredient input, int minimumTier, int syphon, int consumeRate, int drainRate) {
+        for (IItemStack stack : input.getItems()) {
+            addRecipe(output, stack, minimumTier, syphon, consumeRate, drainRate);
+        }
+    }
     
     @ZenMethod
     public static void removeRecipe(IItemStack input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(InputHelper.toStack(input)));
+    }
+
+    @ZenMethod
+    public static void removeRecipe(IIngredient input) {
+        for (IItemStack stack : input.getItems()) removeRecipe(stack);
     }
     
     

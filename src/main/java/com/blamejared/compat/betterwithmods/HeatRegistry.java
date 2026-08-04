@@ -9,6 +9,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +45,11 @@ public class HeatRegistry {
         } else {
             LogHelper.logError(String.format("%s input must create a valid BlockState", stack.getDisplayName()), new IllegalArgumentException(String.format("%s input must create a valid BlockState", stack.getDisplayName())));
         }
+    }
+
+    @ZenMethod
+    public static void addHeatSource(IIngredient input, int heat) {
+        for (IItemStack stack : input.getItems()) addHeatSource(stack, heat);
     }
 
     public static class AddHeatSource extends BaseAction {

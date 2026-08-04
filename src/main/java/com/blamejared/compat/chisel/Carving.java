@@ -33,7 +33,39 @@ public class Carving {
     
     @ZenMethod
     public static void removeVariation(String groupName, IItemStack stack) {
-        ModTweaker.LATE_ADDITIONS.add(new ActionRemoveVariation(groupName, toStack(stack)));
+        ModTweaker.LATE_REMOVALS.add(new ActionRemoveVariation(groupName, toStack(stack)));
+    }
+
+    @ZenMethod
+    public static void setSound(String groupName, net.minecraft.util.SoundEvent sound) {
+        ModTweaker.LATE_ADDITIONS.add(new BaseAction("Carving Sound") {
+            @Override
+            public void apply() {
+                CarvingUtils.getChiselRegistry().setVariationSound(groupName, sound);
+            }
+
+            @Override
+            public String describe() {
+                return "Setting Chisel carving sound for " + groupName;
+            }
+        });
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        ModTweaker.LATE_REMOVALS.add(new BaseAction("Carving") {
+            @Override
+            public void apply() {
+                for (String group : new java.util.ArrayList<>(CarvingUtils.getChiselRegistry().getSortedGroupNames())) {
+                    CarvingUtils.getChiselRegistry().removeGroup(group);
+                }
+            }
+
+            @Override
+            public String describe() {
+                return "Removing all Chisel carving groups";
+            }
+        });
     }
     
     private static class ActionAddGroup extends BaseAction {

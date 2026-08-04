@@ -12,6 +12,8 @@ import com.rwtema.extrautils2.api.machine.XUMachineCrusher;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
+import com.blamejared.compat.RecipeActions;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
@@ -36,6 +38,20 @@ public class Crusher {
     @ZenMethod
     public static void remove(IItemStack input) {
         ModTweaker.LATE_REMOVALS.add(new Remove(input));
+    }
+
+    @ZenMethod
+    public static void remove(IIngredient input) {
+        for (IItemStack stack : input.getItems()) remove(stack);
+    }
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Extra Utilities 2 Crusher", () -> {
+            java.util.List<IMachineRecipe> recipes = new java.util.ArrayList<>();
+            for (IMachineRecipe recipe : XUMachineCrusher.INSTANCE.recipes_registry) recipes.add(recipe);
+            recipes.forEach(recipe -> XUMachineCrusher.INSTANCE.recipes_registry.removeRecipe(recipe));
+        });
     }
     
     private static class Add extends BaseAction {

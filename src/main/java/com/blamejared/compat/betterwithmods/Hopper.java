@@ -19,6 +19,8 @@ import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
 
 import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,21 @@ public class Hopper {
     }
 
     @ZenMethod
+    public static void removeFilter(String name) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveFilter(name));
+    }
+
+    @ZenMethod
+    public static void removeByFilter(IIngredient filter) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveFilterByIngredient(CraftTweakerMC.getIngredient(filter), false));
+    }
+
+    @ZenMethod
+    public static void removeByFiltered(IIngredient filtered) {
+        ModTweaker.LATE_REMOVALS.add(new RemoveFilterByIngredient(CraftTweakerMC.getIngredient(filtered), true));
+    }
+
+    @ZenMethod
     public static void removeRecipe(IItemStack[] outputs, IItemStack[] secondary) {
         ModTweaker.LATE_REMOVALS.add(new RemoveHopperRecipe(Lists.newArrayList(CraftTweakerMC.getItemStacks(outputs)),
                 Lists.newArrayList(CraftTweakerMC.getItemStacks(secondary))));
@@ -75,6 +92,17 @@ public class Hopper {
     @ZenMethod
     public static void removeAll() {
         ModTweaker.LATE_REMOVALS.add(new RemoveAll());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, IHopperFilter> filters() {
+        try {
+            Field field = BWRegistry.HOPPER_FILTERS.getClass().getDeclaredField("FILTERS");
+            field.setAccessible(true);
+            return (Map<String, IHopperFilter>) field.get(BWRegistry.HOPPER_FILTERS);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Unable to access Better With Mods hopper filters", e);
+        }
     }
 
 
@@ -269,6 +297,31 @@ public class Hopper {
         @Override
         public void apply() {
             HopperInteractions.RECIPES.clear();
+        }
+    }
+
+    private static class RemoveFilter extends BaseAction {
+        private final String name;
+        RemoveFilter(String name) { super("Filtered Hopper"); this.name = name; }
+        @Override protected String getRecipeInfo() { return name; }
+        @Override public void apply() { filters().remove(name); }
+    }
+
+    private static class RemoveFilterByIngredient extends BaseAction {
+        private final Ingredient ingredient;
+        private final boolean filtered;
+        RemoveFilterByIngredient(Ingredient ingredient, boolean filtered) {
+            super("Filtered Hopper"); this.ingredient = ingredient; this.filtered = filtered;
+        }
+        @Override protected String getRecipeInfo() { return Arrays.toString(ingredient.getMatchingStacks()); }
+        @Override public void apply() {
+            filters().entrySet().removeIf(entry -> {
+                IHopperFilter filter = entry.getValue();
+                if (!filtered) return Arrays.stream(filter.getFilter().getMatchingStacks()).anyMatch(ingredient::apply);
+                if (!(filter instanceof HopperFilter)) return false;
+                return ((HopperFilter) filter).getFiltered().stream().anyMatch(value ->
+                        Arrays.stream(value.getMatchingStacks()).anyMatch(ingredient::apply));
+            });
         }
     }
 

@@ -10,6 +10,7 @@ import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -19,6 +20,60 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Insolator {
+
+    @ZenMethod
+    public static void addFertilizer(IItemStack input) {
+        ModTweaker.LATE_ADDITIONS.add(new Fertilizer(InputHelper.toStack(input), true));
+    }
+
+    @ZenMethod
+    public static void removeFertilizer(IItemStack input) {
+        ModTweaker.LATE_REMOVALS.add(new Fertilizer(InputHelper.toStack(input), false));
+    }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack primaryOutput, IIngredient primaryInput, IIngredient secondaryInput,
+            int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance,
+            @Optional(valueLong = -1L) int water) {
+        for (IItemStack first : primaryInput.getItems()) for (IItemStack second : secondaryInput.getItems())
+            addRecipe(primaryOutput, first, second, energy, secondaryOutput, secondaryChance, water);
+    }
+
+    @ZenMethod
+    public static void removeRecipeByInput(IIngredient input) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("Insolator", InsolatorManager.class,
+                "getRecipeList", input, false, "getPrimaryInput", "getSecondaryInput"));
+    }
+
+    @ZenMethod
+    public static void removeRecipeByOutput(IIngredient output) {
+        ModTweaker.LATE_REMOVALS.add(ThermalExpansionReflection.removeBy("Insolator", InsolatorManager.class,
+                "getRecipeList", output, true, "getPrimaryOutput", "getSecondaryOutput"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static class Fertilizer extends BaseAction {
+        private final ItemStack input;
+        private final boolean add;
+
+        Fertilizer(ItemStack input, boolean add) {
+            super("Insolator Fertilizer");
+            this.input = input;
+            this.add = add;
+        }
+
+        @Override
+        public void apply() {
+            java.util.Set<Object> lockSet = (java.util.Set<Object>) ThermalExpansionReflection.get(InsolatorManager.class, "lockSet");
+            Object comparable = InsolatorManager.convertInput(input);
+            if (add) lockSet.add(comparable); else lockSet.remove(comparable);
+        }
+
+        @Override
+        protected String getRecipeInfo() {
+            return LogHelper.getStackDescription(input);
+        }
+    }
 
     @ZenMethod
     public static void removeAll() {

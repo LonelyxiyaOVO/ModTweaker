@@ -2,6 +2,7 @@ package com.blamejared.compat.forestry;
 
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.LogHelper;
+import com.blamejared.mtlib.utils.BaseAction;
 import com.blamejared.mtlib.utils.BaseAddForestry;
 import com.blamejared.mtlib.utils.BaseMapAddition;
 import com.blamejared.mtlib.utils.BaseMapRemoval;
@@ -47,6 +48,11 @@ public class Moistener {
     @ZenMethod
     public static void addRecipe(IItemStack output, IItemStack input, int packagingTime) {
         ModTweaker.LATE_ADDITIONS.add(new Add(new MoistenerRecipe(toStack(input), toStack(output), packagingTime)));
+    }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack output, IIngredient input, int packagingTime) {
+        for (IItemStack stack : input.getItems()) addRecipe(output, stack, packagingTime);
     }
     
     private static class Add extends BaseAddForestry<IMoistenerRecipe> {
@@ -147,6 +153,34 @@ public class Moistener {
         } else {
             LogHelper.logWarning(String.format("No %s Recipe found for %s. Command ignored!", Moistener.name, moistenerItem.toString()));
         }
+    }
+
+    @ZenMethod
+    public static void removeFuelByOutput(IIngredient product) {
+        Map<ItemStack, MoistenerFuel> fuelItems = new HashMap<ItemStack, MoistenerFuel>();
+        for(Entry<ItemStack, MoistenerFuel> fuelItem : FuelManager.moistenerResource.entrySet()) {
+            if(product.matches(toIItemStack(fuelItem.getValue().getProduct()))) {
+                fuelItems.put(fuelItem.getKey(), fuelItem.getValue());
+            }
+        }
+        if(!fuelItems.isEmpty()) {
+            ModTweaker.LATE_REMOVALS.add(new RemoveFuel(fuelItems));
+        }
+    }
+
+    @ZenMethod
+    public static void removeAllFuel() {
+        ModTweaker.LATE_REMOVALS.add(new BaseAction(nameFuel) {
+            @Override
+            public void apply() {
+                FuelManager.moistenerResource.clear();
+            }
+
+            @Override
+            protected String getRecipeInfo() {
+                return "all fuels";
+            }
+        });
     }
     
     private static class RemoveFuel extends BaseMapRemoval<ItemStack, MoistenerFuel> {
