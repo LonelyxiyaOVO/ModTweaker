@@ -39,3 +39,8 @@ Supported Mods
 - Terrafirmacraft
 - Thaumcraft
 - Thermal Expansion
+
+ImmersiveTech compatibility has been removed because the original ImmersiveTech
+mod no longer provides CraftTweaker (CRT) support. The unofficial MCT Immersive
+Technology version provides more complete features and native CRT support:
+https://www.curseforge.com/minecraft/mc-mods/mct-immersive-technology

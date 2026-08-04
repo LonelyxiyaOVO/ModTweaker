@@ -25,6 +25,9 @@ repositories {
             includeGroup 'maven.modrinth'
         }
     }
+    maven {
+        url "https://maven.blamejared.com"
+    }
     mavenLocal() // Must be last for caching to work
 }
 
@@ -39,6 +42,28 @@ dependencies {
     // Include OSXNarratorBlocker by default for the dev env, for M1+ Macs
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
 
+    implementation "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.662"
+    implementation 'mezz:jei:4.31.2'
+    implementation "curse.maven:bwm-suite-246760:5702821"
+    implementation "curse.maven:thermal-expansion-69163:2926431"
+    implementation "curse.maven:thermal-foundation-222880:2926428"
+    implementation "curse.maven:cofh-core-69162:2920433"
+    implementation rfg.deobf("curse.maven:inspirations-284007:2843007")
+    implementation rfg.deobf("curse.maven:forestry-59751:7398359")
+    implementation rfg.deobf("curse.maven:extra-utilities-225561:2678374")
+    implementation rfg.deobf("curse.maven:chisel-235279:2915375")
+    implementation rfg.deobf("curse.maven:tinkers-complement-272671:2843439")
+    implementation rfg.deobf("curse.maven:tinkers-antique-1242239:8469500")
+    implementation rfg.deobf("curse.maven:mct-immersive-technology-359407:8494930")
+    implementation "curse.maven:mantle-74924:2713386"
+    implementation rfg.deobf("curse.maven:actually-additions-v2-coffee-edition-1547732:8406397")
+    implementation "curse.maven:bloodmagic-224791:2610083"
+    implementation "curse.maven:guideapi-228832:2645992"
+    implementation "curse.maven:mtlib-253211:3308160"
+    implementation "curse.maven:codechicken-lib-1-8-242818:2779848"
+    implementation "curse.maven:botania-225643:3330934"
+    implementation "curse.maven:thaumcraft-223628:2628773"
+    implementation "curse.maven:baubles-227083:2518667"
     // Example - Dependency descriptor:
     // 'com.google.code.gson:gson:2.8.6' << group: com.google.code.gson, name:gson, version:2.8.6
     // 'group:name:version:classifier' where classifier is optional

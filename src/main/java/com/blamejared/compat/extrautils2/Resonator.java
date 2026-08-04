@@ -5,7 +5,7 @@ import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.helpers.LogHelper;
 import com.blamejared.mtlib.helpers.StackHelper;
 import com.blamejared.mtlib.utils.BaseAction;
-import com.rwtema.extrautils2.crafting.ResonatorRecipe;
+import com.rwtema.extrautils2.api.resonator.IResonatorRecipe;
 import com.rwtema.extrautils2.tile.TileResonator;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
@@ -76,9 +76,9 @@ public class Resonator {
         
         @Override
         public void apply() {
-            List<ResonatorRecipe> list = new ArrayList<>();
-            for(ResonatorRecipe recipe : TileResonator.resonatorRecipes) {
-                if(StackHelper.matches(output, InputHelper.toIItemStack(recipe.output))){
+            List<IResonatorRecipe> list = new ArrayList<>();
+            for(IResonatorRecipe recipe : TileResonator.resonatorRecipes) {
+                if(StackHelper.matches(output, InputHelper.toIItemStack(recipe.getOutput()))){
                  list.add(recipe);
                 }
             }
