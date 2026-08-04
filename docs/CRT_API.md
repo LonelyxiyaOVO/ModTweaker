@@ -415,3 +415,123 @@ Groovy `Closure` callbacks, GroovyScript RecipeBuilder objects, internal
 recipe-object registration, virtualized registries, reload rollback and ASM
 accessors are not CRT APIs and are intentionally not documented as available
 methods here.
+
+## Complete method index
+
+The following index lists the remaining public CRT methods so that every
+registered compatibility class has a discoverable entry point.
+
+### Better With Mods
+
+- `mods.betterwithmods.FilteredHopper`: `addFilter(name, filter)`, `addFilteredItem(name, item)`, `addFilterRecipe(name, input, outputs, secondary)`, `addSoulUrnRecipe(input, outputs, secondary)`, `clearFilter(name)`, `removeFilter(name)`, `removeByFilter(filter)`, `removeByFiltered(filtered)`, `removeRecipe(outputs, secondary)`, `removeRecipeByInput(input)`, `removeAll()`
+- `mods.betterwithmods.Mill`: `builder()`, `addRecipe(inputs, outputs)`, `remove(output)`, `removeByInput(input)`, `removeAll()`
+- `mods.betterwithmods.HeatRegistry`: `addHeatSource(state, heat)`, `addHeatSource(states, displayStack, heat)`, `addHeatSource(stack, heat)`, `addHeatSource(input, heat)`
+- `mods.betterwithmods.Anvil`: `addShaped(output, inputs)`, `addShapedFixed(output, inputs)`, `addShapeless(output, inputs)`, `removeShaped(output, inputs)`, `removeShapedFixed(output, inputs)`, `removeShapeless(output, inputs)`, `removeAll()`
+- `mods.betterwithmods.Kiln`: `builder()`, `add(input, outputs)`, `remove(input)`, `remove(outputs)`, `removeAll()`, `registerBlock(block)`
+- `mods.betterwithmods.Saw`: `builder()`, `add(input, outputs)`, `remove(input)`, `remove(outputs)`, `removeAll()`
+- `mods.betterwithmods.Turntable`: `builder()`, `add(inputBlock, additionalOutput)`, `add(inputBlock, productState, additionalOutput)`, `remove(input)`, `removeByProductState(output)`, `removeAll()`
+- `mods.betterwithmods.Cauldron`, `mods.betterwithmods.Crucible`: `builder()`, `addStoked(inputs, outputs)`, `addUnstoked(inputs, outputs)`, `add(output, secondaryOutput, inputs)`, `add(output, inputs)`, `remove(outputs)`, `removeAll()`
+- `mods.betterwithmods.Bellows`, `mods.betterwithmods.Buoyancy`, `mods.betterwithmods.Movement`: `set(input, value)`
+- `mods.betterwithmods.Misc`: `setFurnaceSmeltingTime(input, time)`
+- `mods.betterwithmods.PulleyManager`: `addPulleyBlock(state)`
+
+### Extra Utilities 2
+
+- `mods.extrautils2.Crusher`: `add(output, input, secondaryOutput, secondaryChance)`, `remove(input)`, `removeAll()`
+- `mods.extrautils2.Enchanter`: `add(output, input, lapis, energy, time, enchantName)`, `remove(input)`, `removeAll()`
+- `mods.extrautils2.Furnace`: `add(output, input)`, `remove(input)`, `removeAll()`
+- `mods.extrautils2.Resonator`: `add(output, input, energy, addOwnerTag)`, `remove(output)`, `removeByInput(input)`
+- `mods.extrautils2.Generator`: `remove(generator, itemInput)`, `remove(generator, fluidInput)`, `removeByGenerator(generator)`, `removeAll()`
+
+### Thermal Expansion
+
+- Devices: `Brewer`, `Charger`, `Fisher`, `FisherBait`, `Tapper`, `TapperFertilizer`, `TapperTree`, `XpCollector`
+- Machines: `Centrifuge`, `Compactor`, `Crucible`, `Diffuser`, `Enchanter`, `Extruder`, `Furnace`, `FurnacePyrolysis`, `InductionSmelter`, `Insolator`, `Precipitator`, `Pulverizer`, `RedstoneFurnace`, `Refinery`, `RefineryPotion`, `SawMill`, `Smelter`, `Transposer`
+- Dynamos: `CompressionDynamo`, `EnervationDynamo`, `MagmaticDynamo`, `NumisticDynamo`, `ReactantDynamo`, `SteamDynamo`
+- Other: `Coolant`, `Factorizer`, `Lapidary`
+
+Every Thermal Expansion class listed above exposes its documented `add` or
+`addRecipe` methods, matching `remove` methods, and/or `removeAll()` methods as
+listed in the source-level API names below:
+
+- `Brewer`: `addRecipe`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeAll`
+- `Charger`: `addRecipe`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeAll`
+- `Fisher`, `FisherBait`, `TapperFertilizer`: `addRecipe`, `removeRecipe`, `removeAll`
+- `TapperTree`: `addRecipe`, `removeRecipeByLog`, `removeRecipeByLeaf`, `removeAll`
+- `Tapper`: `addItem`, `addBlock`, `removeItemByInput`, `removeBlockByInput`, `removeAllItems`, `removeAllBlocks`, `removeAll`
+- `Furnace`: `addRecipe`, `addFood`, `removeFood`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeAllFood`, `removeAll`
+- `FurnacePyrolysis`: `addRecipe`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeAll`
+- `Smelter`: `addRecipe`, `addFlux`, `removeFlux`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeAll`
+- `Diffuser`, `Coolant`, `Lapidary`: add/remove methods and `removeAll`
+- `Centrifuge`: `addRecipe`, `addRecipeMob`, `removeRecipe`, `removeRecipeMob`, `removeRecipeByOutput`, `removeRecipeMobByOutput`, `removeAll`
+- `Compactor`, `Factorizer`: mode-specific add/remove methods and `removeAll`
+- `Crucible`, `Enchanter`, `Insolator`, `Pulverizer`, `SawMill`: add/remove methods and `removeAll`
+- `Extruder`: `addRecipe`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeByType`, `removeAll`
+- `Refinery`: recipe, potion, fossil-fuel and bio-fuel add/remove methods plus clear methods
+- `RefineryPotion`: `addRecipe`, `removeRecipeByInput`, `removeRecipeByOutput`, `removeAll`
+- `Transposer`: extract/fill add/remove methods, `removeAllExtractRecipes`, `removeAllFillRecipes`, `removeAll`
+- Dynamos: reaction/fuel methods and `removeAll()`; `ReactantDynamo` also exposes elemental reactant methods
+
+### Botania
+
+- `Brew`: `addRecipe`, `removeRecipe`, `removeRecipeByInput`, `removeAll`
+- `ManaInfusion`: `addInfusion`, `addAlchemy`, `addConjuration`, `removeRecipe`, `removeRecipeByInput`, `removeRecipeByCatalyst`, `removeAll`
+- `RuneAltar`: `addRecipe`, `removeRecipe`, `removeRecipeByInput`, `removeRecipeByInputs`, `removeAll`
+- `ElvenTrade`: `addRecipe`, `removeRecipe`, `removeRecipeByInput`, `removeRecipeByInputs`, `removeAll`
+- `Magnet`: `addToBlacklist`, `removeFromBlacklist`, `isInBlacklist`, `removeAll`
+- `Apothecary`: `addRecipe`, `removeRecipe`, `removeAll`
+- `Orechid`, `OrechidIgnem`: `addOre`, `removeOre`, `removeAll`
+- `PureDaisy`: `addRecipe`, `removeRecipe`, `removeRecipeByInput`, `removeAll`
+- `Flowers`: `registerFlower`, `registerFlowerWithMini`
+- `Knowledge`, `Lexicon`: knowledge and lexicon entry/page registration methods
+
+### Forestry
+
+- `BeeMutations`: `add`, `remove`, `removeByOutput`, `removeAll`
+- `BeeProduce`: `add`, `removeProduct`, `removeSpecialty`, `removeAll(species)`, `removeAll()`
+- `Carpenter`: `addRecipe`, `removeRecipe`, `removeByFluidInput`, `removeByBox`, `removeByInput`, `removeAll`
+- `Centrifuge`: `addRecipe`, `removeRecipe`, `removeByOutput`, `removeByOutputs`, `removeAll`
+- `Fermenter`: `addRecipe`, `removeRecipe`, `removeByInput`, `removeByCatalyst`, `removeByOutput`, `addFuel`, `removeFuel`, `removeAll`
+- `Squeezer`: `addRecipe`, `removeRecipe`, `removeByOutput`, `removeByInput`, `removeByInputs`, `removeAll`
+- `Still`: `addRecipe`, `removeRecipe`, `removeAll`
+- `ThermionicFabricator`: `addSmelting`, `addCast`, `removeSmelting`, `removeCast`, `removeByFluid`, `removeByCatalyst`, `removeByInput`, `removeSmeltingByOutput`, `removeAll`
+- `Moistener`: recipe and fuel add/remove methods plus `removeAllFuel()`
+- `CharcoalPile`: wall add/remove methods
+
+### Other compatibility classes
+
+- `mods.actuallyadditions.BallOfFur`: `addReturn`, `removeReturn`, `removeAll`
+- `mods.actuallyadditions.AtomicReconstructor`: `addRecipe`, `removeRecipe`, `removeAll`
+- `mods.actuallyadditions.Compost`: `addRecipe`, `removeRecipe`, `removeAll`
+- `mods.actuallyadditions.Crusher`: `addRecipe`, `removeRecipe`, `removeAll`
+- `mods.actuallyadditions.Empowerer`: `addRecipe`, `removeRecipe`, `removeAll`
+- `mods.actuallyadditions.OilGen`: `addRecipe`, `removeRecipe`, `removeAll`
+- `mods.actuallyadditions.TreasureChest`: `addLoot`, `removeLoot`, `removeAll`
+- `mods.actuallyadditions.MiningLens`: `addStoneOre`, `addNetherOre`, `removeStoneOre`, `removeNetherOre`
+- `mods.chisel.Carving`: `addGroup`, `addVariation`, `removeGroup`, `removeVariation`, `setSound`, `removeAll`
+- `mods.bloodmagic.AlchemyArray`: `addRecipe`, `removeRecipe`
+- `mods.bloodmagic.AlchemyTable`: `addRecipe`, `addPotionRecipe`, `removeRecipe`
+- `mods.bloodmagic.BloodAltar`: `addRecipe`, `removeRecipe`
+- `mods.bloodmagic.Meteor`: `addRecipe`, `removeRecipe`, `removeRecipeByInput`, `removeRecipeByCatalyst`, `removeAll`
+- `mods.bloodmagic.Sacrificial`: `add`, `remove`, `removeAll`
+- `mods.bloodmagic.TartaricForge`: `addRecipe`, `removeRecipe`
+- `mods.bloodmagic.Tranquility`: block/blockstate add/remove methods and `removeAll`
+- `mods.inspirations.AnvilSmashing`: `add`, `addBreaking`, `removeByInput`, `removeByOutput`, `removeAll`
+- `mods.tcomplement.Melter`: `removeByInput`, `removeByOutput`, `removeByInputAndOutput`
+- `mods.tcomplement.Blacklist`: `addRecipe`, `removeRecipe`, `removeAll`
+- `mods.tconstruct.Melting`: `addRecipe`, `addEntityMelting`, `removeRecipe`, `removeEntityMelting`
+- `mods.tconstruct.Alloy`: `addRecipe`, `removeRecipe`
+- `mods.tconstruct.Casting`: `addTableRecipe`, `addBasinRecipe`, `removeTableRecipe`, `removeBasinRecipe`
+- `mods.tconstruct.Drying`: `addRecipe`, `removeRecipe`
+- `mods.thaumcraft.Crucible`: `registerRecipe`, `removeRecipe`
+- `mods.thaumcraft.ArcaneWorkbench`: shaped/shapeless registration and removal methods
+- `mods.thaumcraft.Infusion`: `registerRecipe`, `removeRecipe`
+- `mods.thaumcraft.DustTrigger`: `addSingleConversion`, `removeSingleConversion`
+- `mods.thaumcraft.LootBag`: `addLoot`, `removeLoot`, `removeAll(rarity)`
+- `mods.thaumcraft.SmeltingBonus`: `addSmeltingBonus`, `removeSmeltingBonus`
+- `mods.thaumcraft.Warp`: `addWarp`, `setWarp`, `clearWarp`
+- `mods.thaumcraft.Research`: category, node, connection, research-location and item/block scannable methods
+
+The method index is intentionally limited to CRT-callable methods. Groovy
+closures, internal GS recipe objects, virtualized registries and ASM accessors
+are not included.
