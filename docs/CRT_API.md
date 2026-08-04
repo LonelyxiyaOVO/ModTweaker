@@ -535,3 +535,384 @@ listed in the source-level API names below:
 The method index is intentionally limited to CRT-callable methods. Groovy
 closures, internal GS recipe objects, virtualized registries and ASM accessors
 are not included.
+
+## Parameter semantics by mod
+
+The same parameter name does not always mean the same machine slot. Use the
+following tables when adapting an example to a different mod.
+
+### Better With Mods
+
+| Parameter | Meaning |
+| --- | --- |
+| `name` | The native filtered-hopper registry name. It is not an item ID. |
+| `filter` | The item ingredient tested by the hopper before a recipe is selected. |
+| `filtered` | An item allowed by the named filter. |
+| `input` | The item entering the filtered-hopper recipe. |
+| `outputs` | Primary output stacks from the hopper recipe. |
+| `secondary` | Secondary output stacks from the hopper recipe. |
+| `heat` | Better With Mods heat value, not RF or furnace ticks. |
+
+For `Mill`, `inputs` are the ingredients consumed by the Mill Stone and
+`outputs` are the resulting item stacks. `removeByInput` matches the ingredient
+list, while `remove` matches the output list.
+
+### Extra Utilities 2
+
+| Class | Parameter meaning |
+| --- | --- |
+| `Furnace` | `input` is the item placed in the machine; `output` is the smelted item. |
+| `Crusher` | `input` is crushed; `output` is the primary result; `secondaryOutput` is the optional bonus result. |
+| `Enchanter` | `input` is the item being enchanted; `lapis` is the lapis cost; `energy` is RF; `time` is processing time. |
+| `Resonator` | `input` is resonated; `output` is the result; `energy` is the total GP/RF-style recipe cost used by the native recipe. |
+| `Generator` | `generator` is the machine registry name; item/fluid input is the fuel consumed by that generator. |
+
+`Generator.remove("extrautils2:generator", ...)` addresses a specific native
+machine. `Generator.removeByGenerator(...)` removes every recipe from that
+machine, while `Generator.removeAll()` affects all supported generator types.
+
+### Thermal Expansion
+
+| Parameter | Meaning |
+| --- | --- |
+| `input` | The primary item or ingredient entering the machine. |
+| `primaryInput` | The first input slot of a two-input machine. |
+| `secondaryInput` | The second input slot of a two-input machine. |
+| `output` / `primaryOutput` | The main item or fluid produced by the recipe. |
+| `secondaryOutput` | Optional bonus output; `secondaryChance` is its chance value. |
+| `fluidInput` | Fluid consumed by the machine. |
+| `fluidOutput` | Fluid produced by the machine. |
+| `energy` | RF required for one processing operation. |
+| `water` | Water amount consumed by the Precipitator or Insolator, in mB. |
+| `creosote` | Creosote amount produced by pyrolysis, in mB. |
+| `xp` / `factor` | Xp Collector values: base XP and its multiplier/factor. |
+| `rf` / `factor` | Coolant values: RF conversion value and efficiency factor. |
+| `sedimentary` | Extruder recipe category selector, not a chance or amount. |
+
+For `Refinery`, `input` and `output` are fluids. For `Transposer`, an Extract
+recipe has a fluid `output` and item `input`; a Fill recipe has an item `output`,
+item `input`, and a consumed `fluid`.
+
+### Forestry
+
+| Class | Parameter meaning |
+| --- | --- |
+| `Carpenter` | `output` is the crafted item; `ingredients` are the shaped grid; `fluidInput` is the Carpenter tank; `box` is the packaging box slot; `packagingTime` is ticks. |
+| `Centrifuge` | `ingredients`/`input` is the item processed; `output`/`outputs` are weighted products; `packagingTime` is processing ticks. |
+| `Fermenter` | `resource` is the organic item; `fluidInput` is the tank fluid; `fluidOutput` is the produced fluid; `fermentationValue` and `fluidOutputModifier` are native Fermenter values. |
+| `Squeezer` | `ingredients` are item resources; `fluidOutput` is the tank result; `itemOutput` is the optional remnant; `timePerItem` is processing time. |
+| `Still` | `fluidInput` is consumed and `fluidOutput` is produced; `timePerUnit` is processing time. |
+| `ThermionicFabricator` | `itemInput`/`input` are smelting or casting ingredients; `liquidStack`/`fluid` is the glass-like tank fluid; `plan` is the plan slot; `meltingPoint` is the smelting threshold. |
+| `BeeMutations` | `first` and `second` are parent bee species IDs; `output` is the child species ID; `chance` is the mutation chance. |
+| `BeeProduce` | `species` is the Forestry bee species UID; `output` is a product stack; `chance` is product probability; `specialty` selects the specialty map instead of the normal product map. |
+
+Bee species parameters are Forestry allele UIDs such as
+`"forestry.speciesForest"`, not item IDs or ore-dictionary names.
+
+### Botania
+
+| Parameter | Meaning |
+| --- | --- |
+| `output` | Item stack produced by the Botania recipe. |
+| `input` / `inputs` | Item ingredient(s) consumed by the recipe. |
+| `catalyst` | The block or catalyst used by Mana Infusion. |
+| `mana` | Mana cost, not RF and not ticks. |
+| `weight` | Orechid generation weight; larger values make an ore more likely. |
+| `brewName` | Registered Botania brew name, not an item ID. |
+
+`RuneAltar.removeRecipeByInput` matches the ordered recipe input list, while
+`removeRecipeByInputs` matches the complete set of inputs. `ElvenTrade` uses
+the same distinction for its input list.
+
+### Blood Magic
+
+| Parameter | Meaning |
+| --- | --- |
+| `syphon` | Blood Magic Life Essence/Syphon cost. |
+| `ticks` | Processing duration in ticks. |
+| `minimumTier` / `minTier` | Required Blood Altar or Alchemy Table tier. |
+| `consumeRate` | Blood Altar consumption rate. |
+| `drainRate` | Blood Altar drain rate. |
+| `catalyst` | The Meteor or Alchemy Array catalyst item, depending on the class. |
+| `components` | Meteor output component identifiers. |
+| `weights` | Meteor component weights, paired by array index with `components`. |
+| `minSouls` / `soulDrain` | Tartaric Forge minimum souls and per-operation drain. |
+| `type` / `value` | Tranquility block type and its contribution value. |
+
+### Tinkers' Construct and Tinkers' Complement
+
+| Class | Parameter meaning |
+| --- | --- |
+| `Melting` | `input` is the item melted; `output` is the molten fluid; `temp` is the required temperature. |
+| `Alloy` | `inputs` are molten fluids consumed together; `output` is the alloy fluid. |
+| `Casting` | `cast` is the cast ingredient; `fluid` is molten input; `amount` is mB; `consumeCast` controls cast consumption; `time` is ticks. |
+| `Drying` | `input` is dried; `output` is the resulting item; `time` is ticks. |
+| `Melter` | `input` is the item melted by Tinkers' Complement; `output` is its fluid result. |
+| `HighOven` | `fuel`, `oxidizer`, `reducer`, and `purifier` are High Oven additives; `burnTime`, `tempRate`, and `temp` are native High Oven values. |
+
+### Inspirations
+
+| Parameter | Meaning |
+| --- | --- |
+| `input` | The item or block placed into the Inspirations cauldron/anvil operation. |
+| `output` | The resulting item or block state. |
+| `reagent` | Extra ingredient required by a brewing recipe. |
+| `potion` | Potion registry name used by a potion recipe. |
+| `fluid` | Fluid consumed or transformed by a fluid recipe. |
+| `levels` | Cauldron levels consumed or required. |
+| `boiling` | Whether the recipe requires the boiling cauldron state. |
+
+### Thaumcraft
+
+| Parameter | Meaning |
+| --- | --- |
+| `researchKey` / `research` | Thaumcraft research lock required by the recipe or scan. |
+| `aspects` / `formula` | Thaumcraft aspect amounts, not item ingredients. |
+| `vis` | Vis cost for Arcane Workbench crafting. |
+| `instability` | Infusion instability value. |
+| `centralItem` | Infusion Altar central item. |
+| `recipe` | Infusion pedestal inputs. |
+| `category` | Research category key, not the displayed category name. |
+| `parents` | Research node keys that must precede the child node. |
+| `column` / `row` | Research node position in the Thaumonomicon category. |
+| `icon`, `background`, `background2` | Resource locations for the research category graphics. |
+
+For `Research.addResearchLocation`, `mod` is the namespace and `location` is
+the resource path. For `Research.addNode`, `name` is the localization key; it
+is not an item or research key.
+
+## Parameter signatures
+
+The grouped entries above are expanded here with the CRT parameter types used by
+the implementation. Optional parameters are marked with `@Optional`.
+
+### Thermal Expansion signatures
+
+```text
+Brewer.addRecipe(IIngredient input, ILiquidStack fluidInput, ILiquidStack fluidOutput, int energy)
+Charger.addRecipe(IIngredient input, IItemStack output, int energy)
+Fisher.addRecipe(IItemStack fish, int weight)
+FisherBait.addRecipe(IItemStack bait, int multiplier)
+Tapper.addItem(IItemStack input, ILiquidStack output)
+Tapper.addBlock(IItemStack input, ILiquidStack output)
+TapperTree.addRecipe(IBlockState log, IBlockState leaf)
+TapperFertilizer.addRecipe(IItemStack bait, int multiplier)
+XpCollector.addRecipe(IIngredient catalyst, int xp, int factor)
+Coolant.addCoolant(ILiquidStack fluid, int coolantRf, int coolantFactor)
+Diffuser.addRecipe(IItemStack input, int amplifier, int duration)
+Fisher.removeRecipe(IIngredient fish)
+FisherBait.removeRecipe(IIngredient bait)
+Tapper.removeItemByInput(IIngredient input)
+Tapper.removeBlockByInput(IIngredient input)
+TapperTree.removeRecipeByLog(IBlockState log)
+TapperTree.removeRecipeByLeaf(IBlockState leaf)
+XpCollector.remove(IIngredient catalyst)
+Coolant.removeCoolant(ILiquidStack fluid)
+Diffuser.removeRecipe(IIngredient input)
+
+Furnace.addRecipe(IIngredient input, IItemStack output, int energy)
+Furnace.addFood(IItemStack input)
+Furnace.removeFood(IItemStack input)
+Furnace.removeRecipeByInput(IIngredient input)
+Furnace.removeRecipeByOutput(IIngredient output)
+FurnacePyrolysis.addRecipe(IIngredient input, IItemStack output, int energy, int creosote)
+FurnacePyrolysis.removeRecipeByInput(IIngredient input)
+FurnacePyrolysis.removeRecipeByOutput(IIngredient output)
+Smelter.addRecipe(IIngredient primaryInput, IIngredient secondaryInput, IItemStack primaryOutput, IItemStack secondaryOutput, int secondaryChance, int energy)
+Smelter.addFlux(IItemStack input)
+Smelter.removeFlux(IItemStack input)
+Smelter.removeRecipeByInput(IIngredient input)
+Smelter.removeRecipeByOutput(IIngredient output)
+Pulverizer.addRecipe(IItemStack output, IIngredient input, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance)
+Pulverizer.removeRecipeByInput(IIngredient input)
+Pulverizer.removeRecipeByOutput(IIngredient output)
+RedstoneFurnace.addRecipe(IItemStack output, IIngredient input, int energy)
+RedstoneFurnace.addPyrolysisRecipe(IItemStack output, IIngredient input, int energy, int creosote)
+RedstoneFurnace.removeRecipe(IItemStack input)
+RedstoneFurnace.removePyrolysisRecipe(IItemStack input)
+Precipitator.addRecipe(IItemStack output, int water, int energy)
+Precipitator.removeRecipeByInput(IIngredient input)
+Precipitator.removeRecipeByOutput(IIngredient output)
+
+Centrifuge.addRecipe(WeightedItemStack[] outputs, IIngredient input, ILiquidStack fluid, int energy)
+Centrifuge.addRecipeMob(String entityId, WeightedItemStack[] outputs, ILiquidStack fluid, int energy, int xp)
+Centrifuge.removeRecipe(IIngredient input)
+Centrifuge.removeRecipeMob(String entityId)
+Centrifuge.removeRecipeByOutput(IIngredient output)
+Centrifuge.removeRecipeMobByOutput(IIngredient output)
+Compactor.addRecipe(CompactorManager.Mode mode, IItemStack output, IIngredient input, int energy)
+Compactor.removeByInput(CompactorManager.Mode mode, IIngredient input)
+Compactor.removeByOutput(CompactorManager.Mode mode, IIngredient output)
+Extruder.addRecipe(IItemStack output, int fluidHot, int fluidCold, int energy, boolean sedimentary)
+Extruder.removeRecipeByInput(IIngredient input)
+Extruder.removeRecipeByOutput(IIngredient output)
+Extruder.removeByType(boolean sedimentary)
+InductionSmelter.addRecipe(IItemStack primaryOutput, IIngredient primaryInput, IIngredient secondaryInput, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance)
+InductionSmelter.removeRecipe(IItemStack primaryInput, IItemStack secondaryInput)
+Insolator.addRecipe(IItemStack primaryOutput, IIngredient primaryInput, IIngredient secondaryInput, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance, @Optional int water)
+Insolator.removeRecipeByInput(IIngredient input)
+Insolator.removeRecipeByOutput(IIngredient output)
+Refinery.addRecipe(ILiquidStack output, WeightedItemStack outputItem, ILiquidStack input, int energy)
+Refinery.addRecipePotion(ILiquidStack output, ILiquidStack input, int energy)
+Refinery.removeRecipeByInput(IIngredient input)
+Refinery.removeRecipeByOutput(IIngredient output)
+Refinery.removeRecipePotion(ILiquidStack input)
+RefineryPotion.addRecipe(ILiquidStack input, ILiquidStack output, @Optional WeightedItemStack outputItem, int chance, int energy)
+RefineryPotion.removeRecipeByInput(IIngredient input)
+RefineryPotion.removeRecipeByOutput(IIngredient output)
+Transposer.addExtractRecipe(ILiquidStack output, IIngredient input, int energy, @Optional WeightedItemStack itemOut)
+Transposer.removeExtractRecipe(IIngredient input)
+Transposer.removeExtractRecipeByOutput(IIngredient output)
+Transposer.addFillRecipe(IItemStack output, IIngredient input, ILiquidStack fluid, int energy)
+Transposer.removeFillRecipe(IIngredient input, ILiquidStack fluid)
+Transposer.removeFillRecipeByOutput(IIngredient output)
+```
+
+All Thermal Expansion machine, device and dynamo classes also expose the
+corresponding `removeAll()` method where listed in the method index.
+
+### Botania signatures
+
+```text
+Brew.addRecipe(IIngredient[] inputItems, String brewName)
+Brew.removeRecipe(String brewName)
+Brew.removeRecipeByInput(IIngredient[] inputs)
+ManaInfusion.addInfusion(IItemStack output, IIngredient input, int mana)
+ManaInfusion.addAlchemy(IItemStack output, IIngredient input, int mana)
+ManaInfusion.addConjuration(IItemStack output, IIngredient input, int mana)
+ManaInfusion.removeRecipe(IIngredient output)
+ManaInfusion.removeRecipeByInput(IIngredient input)
+ManaInfusion.removeRecipeByCatalyst(IBlockState catalyst)
+RuneAltar.addRecipe(IItemStack output, IIngredient[] input, int mana)
+RuneAltar.removeRecipe(IIngredient output)
+RuneAltar.removeRecipeByInput(IIngredient[] inputs)
+RuneAltar.removeRecipeByInputs(IIngredient[] inputs)
+ElvenTrade.addRecipe(IItemStack[] outputs, IIngredient[] input)
+ElvenTrade.removeRecipe(IIngredient output)
+ElvenTrade.removeRecipeByInput(IIngredient[] inputs)
+ElvenTrade.removeRecipeByInputs(IIngredient[] inputs)
+Apothecary.addRecipe(IItemStack output, IIngredient[] input)
+Apothecary.removeRecipe(IIngredient output)
+Orechid.addOre(IOreDictEntry oreDict, int weight)
+Orechid.addOre(String oreDict, int weight)
+Orechid.removeOre(IOreDictEntry oreDict)
+Orechid.removeOre(String oreDict)
+PureDaisy.addRecipe(IIngredient blockInput, IItemStack blockOutput, @Optional int time)
+PureDaisy.removeRecipe(IIngredient output)
+PureDaisy.removeRecipeByInput(IIngredient input)
+Magnet.addToBlacklist(IIngredient item)
+Magnet.removeFromBlacklist(IIngredient item)
+Magnet.isInBlacklist(IIngredient item)
+Flowers.registerFlower(String name, String flowerClass)
+Flowers.registerFlowerWithMini(String name, String flowerClass, String miniClass)
+Knowledge.registerKnowledgeType(String unlocalized, String localized, String color, boolean autoUnlock)
+```
+
+### Forestry, Blood Magic and Tinkers signatures
+
+```text
+BeeMutations.add(String output, String first, String second, int chance)
+BeeMutations.remove(String output, String first, String second)
+BeeMutations.removeByOutput(String output)
+BeeProduce.add(String species, IItemStack output, float chance, @Optional boolean specialty)
+BeeProduce.removeProduct(String species, IIngredient output)
+BeeProduce.removeSpecialty(String species, IIngredient output)
+Carpenter.addRecipe(IItemStack output, IIngredient[][] ingredients, int packagingTime, @Optional ILiquidStack fluidInput, @Optional IItemStack box)
+Carpenter.removeByFluidInput(ILiquidStack fluidInput)
+Carpenter.removeByBox(IIngredient box)
+Carpenter.removeByInput(IIngredient[] inputs)
+Centrifuge.addRecipe(WeightedItemStack[] output, IItemStack ingredients, int packagingTime)
+Centrifuge.removeByOutput(IIngredient output)
+Centrifuge.removeByOutputs(IIngredient[] outputs)
+Fermenter.addRecipe(ILiquidStack fluidOutput, IItemStack resource, ILiquidStack fluidInput, int fermentationValue, float fluidOutputModifier)
+Fermenter.removeByInput(ILiquidStack input)
+Fermenter.removeByCatalyst(IIngredient catalyst)
+Fermenter.removeByOutput(ILiquidStack output)
+Squeezer.addRecipe(ILiquidStack fluidOutput, IIngredient[] ingredients, int timePerItem, @Optional WeightedItemStack itemOutput)
+Squeezer.removeByOutput(ILiquidStack output)
+Squeezer.removeByInput(IIngredient[] inputs)
+Squeezer.removeByInputs(IIngredient[] inputs)
+ThermionicFabricator.addSmelting(ILiquidStack liquidStack, IItemStack itemInput, int meltingPoint)
+ThermionicFabricator.addCast(IItemStack output, IIngredient[][] ingredients, ILiquidStack liquidStack, @Optional IItemStack plan)
+ThermionicFabricator.removeByFluid(ILiquidStack fluid)
+ThermionicFabricator.removeByCatalyst(IIngredient catalyst)
+ThermionicFabricator.removeByInput(IIngredient input)
+ThermionicFabricator.removeSmeltingByOutput(ILiquidStack output)
+
+AlchemyArray.addRecipe(IItemStack output, IIngredient input, IIngredient catalyst, @Optional String textureLocation)
+AlchemyArray.removeRecipe(IIngredient input, IIngredient catalyst)
+AlchemyTable.addRecipe(IItemStack output, IIngredient[] inputs, int syphon, int ticks, int minTier)
+AlchemyTable.addPotionRecipe(IItemStack[] inputs, IPotionEffect effects, int syphon, int ticks, int minTier)
+AlchemyTable.removeRecipe(IItemStack[] inputs)
+BloodAltar.addRecipe(IItemStack output, IIngredient input, int minimumTier, int syphon, int consumeRate, int drainRate)
+BloodAltar.removeRecipe(IIngredient input)
+Meteor.addRecipe(IItemStack catalyst, String[] components, int[] weights, float explosionStrength, float radius, int cost)
+Sacrificial.add(String entity, int value)
+Tranquility.add(IBlock block, String type, double value)
+Tranquility.add(IBlockState state, String type, double value)
+TartaricForge.addRecipe(IItemStack output, IIngredient[] inputs, double minSouls, double soulDrain)
+
+Alloy.addRecipe(ILiquidStack output, ILiquidStack[] inputs)
+Alloy.removeRecipe(ILiquidStack output, @Optional ILiquidStack[] input)
+Casting.addTableRecipe(IItemStack output, IIngredient cast, ILiquidStack fluid, int amount, @Optional boolean consumeCast, @Optional int time)
+Casting.addBasinRecipe(IItemStack output, IIngredient cast, ILiquidStack fluid, int amount, @Optional boolean consumeCast, @Optional int time)
+Drying.addRecipe(IItemStack output, IIngredient input, int time)
+Melting.addRecipe(ILiquidStack output, IIngredient input, @Optional int temp)
+Melting.addEntityMelting(IEntityDefinition entity, ILiquidStack stack)
+Melting.removeRecipe(ILiquidStack output, @Optional IItemStack input)
+Fuel.registerFuel(ILiquidStack fluid, int duration)
+Blacklist.addRecipe(ILiquidStack output, IIngredient input)
+Blacklist.removeRecipe(IIngredient input)
+Melter.removeByInput(IIngredient input)
+Melter.removeByOutput(ILiquidStack output)
+Melter.removeByInputAndOutput(IIngredient input, ILiquidStack output)
+HighOven.addFuel(IIngredient fuel, int burnTime, int tempRate)
+HighOven.removeFuel(IIngredient stack)
+HighOven.addHeatRecipe(ILiquidStack output, ILiquidStack input, int temp)
+HighOven.removeHeatRecipe(ILiquidStack output, @Optional ILiquidStack input)
+```
+
+### Inspirations and Thaumcraft signatures
+
+```text
+AnvilSmashing.add(IBlockState input, IBlockState output)
+AnvilSmashing.add(IBlock input, IBlockState output)
+AnvilSmashing.addBreaking(IBlockState input)
+AnvilSmashing.removeByInput(IBlockState input)
+AnvilSmashing.removeByOutput(IBlockState output)
+Cauldron.addBrewingRecipe(String output, String input, IIngredient reagent)
+Cauldron.removeBrewingRecipe(String output, @Optional String input, @Optional IIngredient reagent)
+Cauldron.addPotionRecipe(IItemStack output, IIngredient input, String potion, @Optional int levels, @Optional Boolean boiling)
+Cauldron.removePotionRecipe(IIngredient output, @Optional IIngredient input, @Optional String potion)
+Cauldron.addDyeRecipe(IItemStack output, IIngredient input, String stringDye, @Optional int levels)
+Cauldron.removeDyeRecipe(IIngredient output, @Optional IIngredient input, @Optional String stringDye)
+Cauldron.addFluidRecipe(IItemStack output, IIngredient input, ILiquidStack fluid, @Optional int levels, @Optional Boolean boiling)
+Cauldron.addFluidTransform(ILiquidStack output, IIngredient input, ILiquidStack fluid, @Optional int maxLevel, @Optional Boolean boiling)
+Cauldron.addFluidMix(IItemStack output, ILiquidStack liquid1, ILiquidStack liquid2)
+Cauldron.removeFluidRecipe(IIngredient output, @Optional IIngredient input, @Optional ILiquidStack fluid)
+Cauldron.addFillRecipe(IIngredient input, ILiquidStack fluid, @Optional int amount, @Optional IItemStack container, @Optional Boolean boiling)
+Cauldron.removeFillRecipe(IIngredient input, @Optional ILiquidStack fluid)
+
+Research.addCategory(String key, String researchKey, CTAspectStack[] formula, String icon, String background, @Optional String background2)
+Research.removeCategory(String key)
+Research.removeAllCategories()
+Research.addNode(String category, String key, String name, int column, int row, @Optional String[] parents)
+Research.removeNode(String category, String key)
+Research.removeAllNodes(String category)
+Research.connectNodes(String category, String parent, String child)
+Research.disconnectNodes(String category, String parent, String child)
+Research.addResearchLocation(String mod, String location)
+Research.addScannable(String researchKey, IItemStack item)
+Research.addScannable(IBlock block)
+Research.addScannable(String researchKey, IBlock block)
+Crucible.registerRecipe(String name, String researchKey, IItemStack output, IIngredient input, CTAspectStack[] aspects)
+ArcaneWorkbench.registerShapedRecipe(String name, String research, int vis, CTAspectStack[] aspects, IItemStack output, IIngredient[][] input)
+Infusion.registerRecipe(String name, String research, IItemStack output, int instability, CTAspectStack[] aspects, IIngredient centralItem, IIngredient[] recipe)
+DustTrigger.addSingleConversion(IBlock input, IItemStack output, @Optional String research)
+LootBag.addLoot(WeightedItemStack stack, int[] bagTypes)
+LootBag.removeLoot(IItemStack stack, int[] bagTypes)
+SmeltingBonus.addSmeltingBonus(IIngredient input, WeightedItemStack output)
+Warp.addWarp(IItemStack stack, int amount)
+Warp.setWarp(IItemStack stack, int amount)
+Warp.clearWarp(IItemStack stack)
+```
