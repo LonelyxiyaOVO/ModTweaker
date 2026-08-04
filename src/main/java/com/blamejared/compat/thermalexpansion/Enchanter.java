@@ -2,6 +2,7 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.EnchanterManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
@@ -14,6 +15,15 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Enchanter {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Enchanter", () -> {
+            for(EnchanterManager.EnchanterRecipe recipe : EnchanterManager.getRecipeList()) {
+                EnchanterManager.removeRecipe(recipe.getPrimaryInput(), recipe.getSecondaryInput());
+            }
+        });
+    }
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IItemStack input, IItemStack secondInput, int energy, int experience, boolean empowered) {

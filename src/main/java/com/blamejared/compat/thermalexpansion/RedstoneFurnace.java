@@ -2,11 +2,13 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.FurnaceManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.*;
 
@@ -14,6 +16,32 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class RedstoneFurnace {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("RedstoneFurnace", () -> {
+            for(FurnaceManager.FurnaceRecipe recipe : FurnaceManager.getRecipeList(false)) {
+                FurnaceManager.removeRecipe(recipe.getInput());
+            }
+            for(FurnaceManager.FurnaceRecipe recipe : FurnaceManager.getRecipeList(true)) {
+                FurnaceManager.removeRecipePyrolysis(recipe.getInput());
+            }
+        });
+    }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack output, IIngredient input, int energy) {
+        for(IItemStack stack : input.getItems()) {
+            addRecipe(output, stack, energy);
+        }
+    }
+
+    @ZenMethod
+    public static void addPyrolysisRecipe(IItemStack output, IIngredient input, int energy, int creosote) {
+        for(IItemStack stack : input.getItems()) {
+            addPyrolysisRecipe(output, stack, energy, creosote);
+        }
+    }
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IItemStack input, int energy) {

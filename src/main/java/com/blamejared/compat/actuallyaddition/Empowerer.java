@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.*;
@@ -18,6 +20,11 @@ import java.util.*;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class Empowerer {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Empowerer", ActuallyAdditionsAPI.EMPOWERER_RECIPES);
+    }
+    
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IIngredient input, IIngredient modifier1, IIngredient modifier2, IIngredient modifier3, IIngredient modifier4, int energyPerStand, int time, @Optional float[] particleColourArray) {

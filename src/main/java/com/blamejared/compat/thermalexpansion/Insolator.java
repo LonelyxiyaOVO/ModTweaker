@@ -2,6 +2,7 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.InsolatorManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.helpers.LogHelper;
 import com.blamejared.mtlib.utils.BaseAction;
@@ -18,6 +19,15 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Insolator {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Insolator", () -> {
+            for(InsolatorManager.InsolatorRecipe recipe : InsolatorManager.getRecipeList()) {
+                InsolatorManager.removeRecipe(recipe.getPrimaryInput(), recipe.getSecondaryInput());
+            }
+        });
+    }
     
     @ZenMethod
     public static void addRecipe(IItemStack primaryOutput, IItemStack primaryInput, IItemStack secondaryInput, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance, @Optional(valueLong = -1L) int water) {

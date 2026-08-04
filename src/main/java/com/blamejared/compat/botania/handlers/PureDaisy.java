@@ -1,5 +1,7 @@
 package com.blamejared.compat.botania.handlers;
 
+import com.blamejared.compat.RecipeActions;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +30,11 @@ import vazkii.botania.api.recipe.RecipePureDaisy;
 @ModOnly("botania")
 @ZenRegister
 public class PureDaisy {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("PureDaisy", BotaniaAPI.pureDaisyRecipes);
+    }
+    
     
     public static final String name = "Botania PureDaisy";
     

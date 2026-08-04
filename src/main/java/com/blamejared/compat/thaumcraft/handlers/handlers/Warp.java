@@ -13,6 +13,27 @@ import thaumcraft.api.ThaumcraftApi;
 @ZenRegister
 @ModOnly("thaumcraft")
 public class Warp {
+
+    @ZenMethod
+    public static void addWarp(IItemStack stack, int amount) {
+        setWarp(stack, amount);
+    }
+
+    @ZenMethod
+    public static void clearWarp(IItemStack stack) {
+        ModTweaker.LATE_REMOVALS.add(new BaseAction("Warp") {
+            @Override
+            public void apply() {
+                ItemStack item = InputHelper.toStack(stack);
+                ThaumcraftApi.addWarpToItem(item, -ThaumcraftApi.getWarp(item));
+            }
+
+            @Override
+            protected String getRecipeInfo() {
+                return LogHelper.getStackDescription(stack);
+            }
+        });
+    }
     
     /**
      * Warp to gain on craft

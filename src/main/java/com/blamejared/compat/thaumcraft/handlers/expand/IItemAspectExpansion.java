@@ -14,6 +14,40 @@ import thaumcraft.api.aspects.AspectList;
 @ModOnly("thaumcraft")
 @ZenRegister
 public class IItemAspectExpansion {
+
+    @SuppressWarnings("deprecation")
+    @ZenMethod
+    public static void addAspect(IItemStack stack, CTAspectStack aspect) {
+        ModTweaker.LATE_ADDITIONS.add(new BaseAction("Aspects") {
+            @Override
+            public void apply() {
+                AspectList list = new AspectList(InputHelper.toStack(stack));
+                list.add(aspect.getInternal().getInternal(), aspect.getAmount());
+                ThaumcraftApi.registerObjectTag(InputHelper.toStack(stack), list);
+            }
+
+            @Override
+            protected String getRecipeInfo() {
+                return LogHelper.getStackDescription(stack);
+            }
+        });
+    }
+
+    @SuppressWarnings("deprecation")
+    @ZenMethod
+    public static void clearAspects(IItemStack stack) {
+        ModTweaker.LATE_REMOVALS.add(new BaseAction("Aspects") {
+            @Override
+            public void apply() {
+                ThaumcraftApi.registerObjectTag(InputHelper.toStack(stack), new AspectList());
+            }
+
+            @Override
+            protected String getRecipeInfo() {
+                return LogHelper.getStackDescription(stack);
+            }
+        });
+    }
     
     @SuppressWarnings("deprecation")
     @ZenMethod

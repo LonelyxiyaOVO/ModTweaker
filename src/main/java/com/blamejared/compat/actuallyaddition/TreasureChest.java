@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.helpers.LogHelper;
@@ -20,6 +22,11 @@ import java.util.List;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class TreasureChest {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("TreasureChest", ActuallyAdditionsAPI.TREASURE_CHEST_LOOT);
+    }
+    
     
     @ZenMethod
     public static void addLoot(IItemStack returnItem, int chance, int minAmount, int maxAmount) {

@@ -1,5 +1,7 @@
 package com.blamejared.compat.botania.handlers;
 
+import com.blamejared.compat.RecipeActions;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +28,11 @@ import vazkii.botania.api.recipe.RecipeBrew;
 @ModOnly("botania")
 @ZenRegister
 public class Brew {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Brew", BotaniaAPI.brewRecipes);
+    }
+    
     
     public static final String name = "Botania Brew";
     

@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.*;
@@ -18,6 +20,11 @@ import java.util.*;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class Crusher {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Crusher", ActuallyAdditionsAPI.CRUSHER_RECIPES);
+    }
+    
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IIngredient input, @Optional IItemStack outputSecondary, @Optional int outputSecondaryChance) {

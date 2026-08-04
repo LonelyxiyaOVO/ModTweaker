@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.utils.*;
 import crafttweaker.annotations.*;
@@ -15,6 +17,11 @@ import java.util.*;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class OilGen {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("OilGen", ActuallyAdditionsAPI.OIL_GENERATOR_RECIPES);
+    }
+    
     
     @ZenMethod
     public static void addRecipe(ILiquidStack fluid, int genAmount, @Optional int genTime) {

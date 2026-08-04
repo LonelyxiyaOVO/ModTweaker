@@ -1,5 +1,7 @@
 package com.blamejared.compat.botania.handlers;
 
+import com.blamejared.compat.RecipeActions;
+
 import static com.blamejared.mtlib.helpers.InputHelper.toIItemStack;
 import static com.blamejared.mtlib.helpers.InputHelper.toObject;
 import static com.blamejared.mtlib.helpers.InputHelper.toStack;
@@ -28,6 +30,11 @@ import vazkii.botania.api.recipe.RecipeManaInfusion;
 @ModOnly("botania")
 @ZenRegister
 public class ManaInfusion {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("ManaInfusion", BotaniaAPI.manaInfusionRecipes);
+    }
+    
     
     protected static final String name = "Botania Mana Infusion";
     

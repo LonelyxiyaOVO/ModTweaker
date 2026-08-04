@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.*;
@@ -17,6 +19,11 @@ import java.util.*;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class AtomicReconstructor {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("AtomicReconstructor", ActuallyAdditionsAPI.RECONSTRUCTOR_LENS_CONVERSION_RECIPES);
+    }
+    
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IIngredient input, int energyUsed) {

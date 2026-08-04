@@ -2,6 +2,7 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.SawmillManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
@@ -14,6 +15,15 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class SawMill {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("SawMill", () -> {
+            for(SawmillManager.SawmillRecipe recipe : SawmillManager.getRecipeList()) {
+                SawmillManager.removeRecipe(recipe.getInput());
+            }
+        });
+    }
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IItemStack input, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {

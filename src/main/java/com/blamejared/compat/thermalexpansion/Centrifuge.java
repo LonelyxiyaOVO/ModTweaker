@@ -2,6 +2,7 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.CentrifugeManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
@@ -25,6 +26,18 @@ import java.util.ArrayList;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Centrifuge {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Centrifuge", () -> {
+            for(CentrifugeManager.CentrifugeRecipe recipe : CentrifugeManager.getRecipeList()) {
+                CentrifugeManager.removeRecipe(recipe.getInput());
+            }
+            for(CentrifugeManager.CentrifugeRecipe recipe : CentrifugeManager.getRecipeListMobs()) {
+                CentrifugeManager.removeRecipeMob(recipe.getInput());
+            }
+        });
+    }
     
     @ZenMethod
     public static void addRecipe(WeightedItemStack[] outputs, IItemStack input, ILiquidStack fluid, int energy) {

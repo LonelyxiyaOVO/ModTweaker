@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.helpers.LogHelper;
@@ -24,6 +26,11 @@ import java.util.List;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class Compost {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Compost", ActuallyAdditionsAPI.COMPOST_RECIPES);
+    }
+    
     
     @SuppressWarnings("deprecation")
     @ZenMethod

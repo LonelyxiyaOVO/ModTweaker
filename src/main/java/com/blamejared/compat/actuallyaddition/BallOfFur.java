@@ -1,5 +1,7 @@
 package com.blamejared.compat.actuallyaddition;
 
+import com.blamejared.compat.RecipeActions;
+
 import com.blamejared.ModTweaker;
 import com.blamejared.mtlib.helpers.InputHelper;
 import com.blamejared.mtlib.helpers.LogHelper;
@@ -20,6 +22,11 @@ import java.util.List;
 @ModOnly("actuallyadditions")
 @ZenRegister
 public class BallOfFur {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("BallOfFur", ActuallyAdditionsAPI.BALL_OF_FUR_RETURN_ITEMS);
+    }
+    
     
     @ZenMethod
     public static void addReturn(IItemStack output, int chance) {

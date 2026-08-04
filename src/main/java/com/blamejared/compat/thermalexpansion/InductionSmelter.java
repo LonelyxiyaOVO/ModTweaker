@@ -2,11 +2,13 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.SmelterManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.*;
 
@@ -14,6 +16,24 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class InductionSmelter {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("InductionSmelter", () -> {
+            for(SmelterManager.SmelterRecipe recipe : SmelterManager.getRecipeList()) {
+                SmelterManager.removeRecipe(recipe.getPrimaryInput(), recipe.getSecondaryInput());
+            }
+        });
+    }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack primaryOutput, IIngredient primaryInput, IIngredient secondaryInput, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {
+        for(IItemStack primary : primaryInput.getItems()) {
+            for(IItemStack secondary : secondaryInput.getItems()) {
+                addRecipe(primaryOutput, primary, secondary, energy, secondaryOutput, secondaryChance);
+            }
+        }
+    }
     
     @ZenMethod
     public static void addRecipe(IItemStack primaryOutput, IItemStack primaryInput, IItemStack secondaryInput, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {
@@ -75,11 +95,11 @@ public class InductionSmelter {
                 SmelterManager.removeRecipe(primaryInput, secondaryInput);
             }
 
-            if(SmelterManager.recipeExists(primaryInput, secondaryInput)) {
+            if(SmelterManager.recipeExists(secondaryInput, primaryInput)) {
                 SmelterManager.removeRecipe(secondaryInput, primaryInput);
             }
 
-            if(SmelterManager.recipeExists(primaryInput, secondaryInput)) {
+            if(SmelterManager.recipeExists(primaryInput, secondaryInput) || SmelterManager.recipeExists(secondaryInput, primaryInput)) {
                 CraftTweakerAPI.logError("InductionSmelter recipes for: " + primaryInput + " and " + secondaryInput + " still exists after reversing fields.");
             }
         }

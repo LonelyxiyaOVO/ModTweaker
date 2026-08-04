@@ -2,6 +2,7 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.CompactorManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
@@ -14,6 +15,17 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Compactor {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Compactor", () -> {
+            for(CompactorManager.Mode mode : CompactorManager.Mode.values()) {
+                for(CompactorManager.CompactorRecipe recipe : CompactorManager.getRecipeList(mode)) {
+                    CompactorManager.removeRecipe(recipe.getInput(), mode);
+                }
+            }
+        });
+    }
     
     @ZenMethod
     public static void addMintRecipe(IItemStack output, IItemStack input, int energy) {

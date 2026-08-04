@@ -1,5 +1,7 @@
 package com.blamejared.compat.botania.handlers;
 
+import com.blamejared.compat.RecipeActions;
+
 import static com.blamejared.mtlib.helpers.InputHelper.toObjects;
 import static com.blamejared.mtlib.helpers.StackHelper.matches;
 
@@ -29,6 +31,11 @@ import vazkii.botania.api.recipe.RecipeElvenTrade;
 @ModOnly("botania")
 @ZenRegister
 public class ElvenTrade {
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("ElvenTrade", BotaniaAPI.elvenTradeRecipes);
+    }
+    
     
     protected static final String name = "Botania Eleven Trade";
     

@@ -2,11 +2,13 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.PulverizerManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.*;
 import crafttweaker.api.item.IItemStack;
+import crafttweaker.api.item.IIngredient;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.*;
 
@@ -14,6 +16,22 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Pulverizer {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Pulverizer", () -> {
+            for(PulverizerManager.PulverizerRecipe recipe : PulverizerManager.getRecipeList()) {
+                PulverizerManager.removeRecipe(recipe.getInput());
+            }
+        });
+    }
+
+    @ZenMethod
+    public static void addRecipe(IItemStack output, IIngredient input, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {
+        for(IItemStack stack : input.getItems()) {
+            addRecipe(output, stack, energy, secondaryOutput, secondaryChance);
+        }
+    }
     
     @ZenMethod
     public static void addRecipe(IItemStack output, IItemStack input, int energy, @Optional IItemStack secondaryOutput, @Optional int secondaryChance) {

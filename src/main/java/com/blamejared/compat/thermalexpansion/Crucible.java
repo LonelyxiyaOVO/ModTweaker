@@ -2,6 +2,7 @@ package com.blamejared.compat.thermalexpansion;
 
 import cofh.thermalexpansion.util.managers.machine.CrucibleManager;
 import com.blamejared.ModTweaker;
+import com.blamejared.compat.RecipeActions;
 import com.blamejared.mtlib.helpers.*;
 import com.blamejared.mtlib.utils.BaseAction;
 import crafttweaker.CraftTweakerAPI;
@@ -16,6 +17,15 @@ import stanhebben.zenscript.annotations.*;
 @ModOnly("thermalexpansion")
 @ZenRegister
 public class Crucible {
+
+    @ZenMethod
+    public static void removeAll() {
+        RecipeActions.removeAll("Crucible", () -> {
+            for(CrucibleManager.CrucibleRecipe recipe : CrucibleManager.getRecipeList()) {
+                CrucibleManager.removeRecipe(recipe.getInput());
+            }
+        });
+    }
     
     @ZenMethod
     public static void addRecipe(ILiquidStack output, IItemStack input, int energy) {
