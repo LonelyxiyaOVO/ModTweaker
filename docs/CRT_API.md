@@ -377,6 +377,104 @@ mods.thaumcraft.Research.connectNodes("EXAMPLE", "BASICS", "NODE");
 mods.thaumcraft.Research.removeNode("EXAMPLE", "NODE");
 ```
 
+## PizzaCraft
+
+### Bakeware
+
+#### Package
+
+`mods.pizzacraft.Bakeware`
+
+#### Addition
+
+```zenscript
+// Shaped: use rows followed by character/ingredient pairs.
+mods.pizzacraft.Bakeware.addShaped(
+    <minecraft:bread>,
+    "WWW", " F ",
+    'W', <ore:wool>,
+    'F', <minecraft:flint>
+);
+
+// A matrix is useful when a row contains empty slots or only one cell.
+mods.pizzacraft.Bakeware.addShaped(
+    <minecraft:bread>,
+    [[<minecraft:wheat>, null, <minecraft:wheat>],
+     [null, <minecraft:flint>, null]] as IIngredient[][]
+);
+
+mods.pizzacraft.Bakeware.addShapeless(
+    <minecraft:cookie> * 2,
+    [<minecraft:wheat>, <minecraft:wheat>, <minecraft:dye:3>]
+);
+```
+
+#### Removal
+
+```zenscript
+mods.pizzacraft.Bakeware.remove(<pizzacraft:raw_pizza_0>);
+mods.pizzacraft.Bakeware.removeAll();
+```
+
+`addRecipe(output, inputs)` remains as a deprecated alias for
+`addShapeless(output, inputs)`.
+
+### Mortar
+
+#### Package
+
+`mods.pizzacraft.Mortar`
+
+#### Addition
+
+```zenscript
+// Shaped inputs are matched in the order of the mortar slots.
+mods.pizzacraft.Mortar.addShaped(
+    <minecraft:bread>, 6,
+    [<ore:wheat>, <pizzacraft:onion_slice>]
+);
+
+mods.pizzacraft.Mortar.addShapeless(
+    <minecraft:string> * 3, 4,
+    [<minecraft:wool>, <ore:nuggetGold>]
+);
+```
+
+#### Removal
+
+```zenscript
+mods.pizzacraft.Mortar.remove(<pizzacraft:flour_corn>);
+mods.pizzacraft.Mortar.removeAll();
+```
+
+`addRecipe(output, duration, inputs)` remains as a deprecated alias for
+`addShapeless(output, duration, inputs)`.
+
+### Chopping Board
+
+#### Package
+
+`mods.pizzacraft.ChoppingBoard`
+
+#### Addition
+
+```zenscript
+mods.pizzacraft.ChoppingBoard.addRecipe(
+    <minecraft:iron_ingot>, <ore:plankWood>
+);
+mods.pizzacraft.ChoppingBoard.addRecipe(
+    <minecraft:wool>, <minecraft:pumpkin> | <minecraft:brewing_stand>
+);
+```
+
+#### Removal
+
+```zenscript
+mods.pizzacraft.ChoppingBoard.removeByOutput(<pizzacraft:onion_slice>);
+mods.pizzacraft.ChoppingBoard.removeByInput(<ore:cropTomato> | <pizzacraft:cucumber>);
+mods.pizzacraft.ChoppingBoard.removeAll();
+```
+
 ## Thermal Expansion
 
 ### Furnace, Smelter and Transposer
@@ -531,6 +629,9 @@ listed in the source-level API names below:
 - `mods.thaumcraft.SmeltingBonus`: `addSmeltingBonus`, `removeSmeltingBonus`
 - `mods.thaumcraft.Warp`: `addWarp`, `setWarp`, `clearWarp`
 - `mods.thaumcraft.Research`: category, node, connection, research-location and item/block scannable methods
+- `mods.pizzacraft.Bakeware`: `addShaped(output, rows, key/ingredient pairs)`, `addShaped(output, matrix)`, `addShapeless(output, inputs)`, deprecated `addRecipe(output, inputs)`, `remove(output)`, `removeAll()`
+- `mods.pizzacraft.Mortar`: `addShaped(output, duration, inputs)`, `addShapeless(output, duration, inputs)`, deprecated `addRecipe(output, duration, inputs)`, `remove(output)`, `removeAll()`
+- `mods.pizzacraft.ChoppingBoard`: `addRecipe(output, input)`, `removeByOutput(output)`, `removeByInput(input)`, `removeAll()`
 
 The method index is intentionally limited to CRT-callable methods. Groovy
 closures, internal GS recipe objects, virtualized registries and ASM accessors
@@ -681,10 +782,45 @@ For `Research.addResearchLocation`, `mod` is the namespace and `location` is
 the resource path. For `Research.addNode`, `name` is the localization key; it
 is not an item or research key.
 
+### PizzaCraft
+
+| Class | Parameter meaning |
+| --- | --- |
+| `Bakeware` | `output` is the item produced; shaped `rows` and `matrix` describe the 1x1 to 3x3 Bakeware grid; `inputs` are consumed CraftTweaker ingredients. |
+| `Mortar` | `output` is the item produced; `duration` is processing time in ticks; shaped `inputs` are checked by slot order, while shapeless inputs are matched in any slot. |
+| `ChoppingBoard` | `output` is the item produced; `input` is the item ingredient placed on the board. Ore-dictionary and OR ingredients expand to every matching item stack in the native registry. |
+
+PizzaCraft's `remove`/`removeByOutput` methods compare the complete output stack,
+while `ChoppingBoard.removeByInput` tests the registered input against the
+CraftTweaker ingredient. `removeAll()` clears the native recipe registry for
+that machine only.
+
 ## Parameter signatures
 
 The grouped entries above are expanded here with the CRT parameter types used by
 the implementation. Optional parameters are marked with `@Optional`.
+
+### PizzaCraft signatures
+
+```text
+Bakeware.addShaped(IItemStack output, IIngredient[][] inputs)
+Bakeware.addShaped(IItemStack output, String[] rows, Object... keyAndIngredientPairs)
+Bakeware.addShapeless(IItemStack output, IIngredient[] inputs)
+Bakeware.addRecipe(IItemStack output, IIngredient[] inputs)              // deprecated alias
+Bakeware.remove(IItemStack output)
+Bakeware.removeAll()
+
+Mortar.addShaped(IItemStack output, int duration, IIngredient[] inputs)
+Mortar.addShapeless(IItemStack output, int duration, IIngredient[] inputs)
+Mortar.addRecipe(IItemStack output, int duration, IIngredient[] inputs)   // deprecated alias
+Mortar.remove(IItemStack output)
+Mortar.removeAll()
+
+ChoppingBoard.addRecipe(IItemStack output, IIngredient input)
+ChoppingBoard.removeByOutput(IItemStack output)
+ChoppingBoard.removeByInput(IIngredient input)
+ChoppingBoard.removeAll()
+```
 
 ### Thermal Expansion signatures
 

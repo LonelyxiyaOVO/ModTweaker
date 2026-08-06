@@ -34,6 +34,7 @@ Supported Mods
 - Mekanism 8
 - Metallurgy
 - PneumaticCraft
+- PizzaCraft
 - Railcraft
 - Tinkers Construct
 - Tinkers' Complement
