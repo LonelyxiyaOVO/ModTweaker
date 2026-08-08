@@ -1,19 +1,8 @@
-ModTweaker2
-==========
-ModTweaker is an addon for MineTweaker 3. It provides CraftTweaker (CRT)
-support for mod machines and recipe registries that are not supported natively.
-
-Stable Releases on Curse
-----------
-https://minecraft.curseforge.com/projects/modtweaker
-
-Development build on Jenkins
-----------
-http://ci.blamejared.com/job/Modtweaker/
-
-Guidelines for Bug Reporting
-----------
-https://github.com/jaredlll08/ModTweaker2/wiki/Bug-Reporting-Guidelines
+ModTweaker Community Edition
+============================
+ModTweaker Community Edition is an unofficial, community-maintained version
+of ModTweaker for Minecraft 1.12.2. It provides CraftTweaker (CRT) support
+for mod machines and recipe registries that are not supported natively.
 
 Supported Mods
 ----------
