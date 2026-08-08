@@ -18,29 +18,23 @@ https://github.com/jaredlll08/ModTweaker2/wiki/Bug-Reporting-Guidelines
 Supported Mods
 ----------
 - Actually Additions
-- Applied Energistics 2
-- Auracascade
 - Better With Mods
 - Blood Magic
 - Botania
 - Chisel
-- ExNihilo
-- ExtendedWorkbench
-- Factorization
+- Extra Utilities 2
 - Forestry
-- Flaxbeard's Steam Power
 - Inspirations
-- Mariculture
-- Mekanism 8
-- Metallurgy
-- PneumaticCraft
 - PizzaCraft
-- Railcraft
-- Tinkers Construct
-- Tinkers' Complement
-- Terrafirmacraft
 - Thaumcraft
 - Thermal Expansion
+- Tinkers' Complement
+- Tinkers' Construct
+
+This list contains only mods with active CRT integration in the current source.
+Library and support dependencies such as Mantle, CoFH Core, Guide API, MTLib,
+Baubles and CodeChickenLib are not target integrations. Refined Storage is also
+not listed because its remaining Solderer class is only a deprecated no-op stub.
 
 ImmersiveTech compatibility has been removed because the original ImmersiveTech
 mod no longer provides CraftTweaker support. The unofficial MCT Immersive
