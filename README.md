@@ -15,6 +15,7 @@ Supported Mods
 - Forestry
 - Inspirations
 - PizzaCraft
+- Railcraft
 - Thaumcraft
 - Thermal Expansion
 - Tinkers' Complement

@@ -475,6 +475,104 @@ mods.pizzacraft.ChoppingBoard.removeByInput(<ore:cropTomato> | <pizzacraft:cucum
 mods.pizzacraft.ChoppingBoard.removeAll();
 ```
 
+## Railcraft
+
+### Blast Furnace
+
+#### Package
+
+`mods.railcraft.BlastFurnace`
+
+#### Addition and Removal
+
+```zenscript
+mods.railcraft.BlastFurnace.addRecipe(
+    "example_blast", <minecraft:iron_ingot>, <ore:oreIron>, 200, 1
+);
+mods.railcraft.BlastFurnace.removeRecipe("railcraft:smelt_horse_armor");
+mods.railcraft.BlastFurnace.removeRecipe(<minecraft:iron_ingot>, <ore:oreIron>);
+mods.railcraft.BlastFurnace.removeAll();
+```
+
+### Coke Oven
+
+#### Package
+
+`mods.railcraft.CokeOven`
+
+#### Addition and Removal
+
+```zenscript
+mods.railcraft.CokeOven.addRecipe(
+    "example_coke", <minecraft:coal>, <ore:logWood>, 600,
+    <liquid:creosote> * 1000
+);
+mods.railcraft.CokeOven.removeRecipe("railcraft:coke_block");
+mods.railcraft.CokeOven.removeRecipe(<minecraft:coal>, <ore:logWood>);
+mods.railcraft.CokeOven.removeAll();
+```
+
+### Rock Crusher
+
+#### Package
+
+`mods.railcraft.RockCrusher`
+
+#### Addition and Removal
+
+```zenscript
+mods.railcraft.RockCrusher.addRecipe(
+    "example_rock", [
+        <minecraft:gravel>,
+        <minecraft:sand> % 50,
+        <minecraft:flint> % 25
+    ], <ore:oreIron>
+);
+mods.railcraft.RockCrusher.removeRecipe("railcraft:crushed_obsidian");
+mods.railcraft.RockCrusher.removeRecipeByInput(<ore:oreIron>);
+mods.railcraft.RockCrusher.removeAll();
+```
+
+### Rolling Machine
+
+#### Package
+
+`mods.railcraft.RollingMachine`
+
+#### Addition and Removal
+
+```zenscript
+mods.railcraft.RollingMachine.addShaped(
+    "example_rolling", <minecraft:diamond>, [
+        [<minecraft:iron_ingot>, null, <minecraft:iron_ingot>],
+        [null, <minecraft:iron_ingot>, null],
+        [<minecraft:iron_ingot>, null, <minecraft:iron_ingot>]
+    ], 100
+);
+mods.railcraft.RollingMachine.addShapeless(
+    "example_rolling_flat", <minecraft:gold_ingot>,
+    [<minecraft:iron_ingot>, <minecraft:redstone>], 100
+);
+mods.railcraft.RollingMachine.remove("modtweaker:example_rolling");
+mods.railcraft.RollingMachine.removeByOutput(<railcraft:rail>);
+mods.railcraft.RollingMachine.removeAll();
+```
+
+### Fluid Fuel
+
+#### Package
+
+`mods.railcraft.FluidFuel`
+
+#### Addition and Removal
+
+```zenscript
+mods.railcraft.FluidFuel.addFuel(<liquid:creosote>, 4800);
+mods.railcraft.FluidFuel.addFuel(<liquid:lava>.definition, 2400);
+mods.railcraft.FluidFuel.removeFuel(<liquid:creosote>);
+mods.railcraft.FluidFuel.removeAll();
+```
+
 ## Thermal Expansion
 
 ### Furnace, Smelter and Transposer
@@ -540,6 +638,14 @@ registered compatibility class has a discoverable entry point.
 - `mods.extrautils2.Furnace`: `add(output, input)`, `remove(input)`, `removeAll()`
 - `mods.extrautils2.Resonator`: `add(output, input, energy, addOwnerTag)`, `remove(output)`, `removeByInput(input)`
 - `mods.extrautils2.Generator`: `remove(generator, itemInput)`, `remove(generator, fluidInput)`, `removeByGenerator(generator)`, `removeAll()`
+
+### Railcraft
+
+- `mods.railcraft.BlastFurnace`: `addRecipe(name, output, input, time, slag)`, `removeRecipe(name)`, `removeRecipe(output, input)`, `removeAll()`
+- `mods.railcraft.CokeOven`: `addRecipe(name, output, input, time, outputFluid)`, `removeRecipe(name)`, `removeRecipe(output, input)`, `removeAll()`
+- `mods.railcraft.RockCrusher`: `addRecipe(name, outputs, input)`, `removeRecipe(name)`, `removeRecipe(input)`, `removeRecipeByInput(input)`, `removeAll()`
+- `mods.railcraft.RollingMachine`: `addShaped(name, output, inputs, time)`, `addShapeless(name, output, inputs, time)`, `remove(name)`, `remove(output)`, `removeByOutput(output)`, `removeAll()`
+- `mods.railcraft.FluidFuel`: `addFuel(liquid, heatValuePerBucket)`, `removeFuel(liquid)`, `removeAll()`
 
 ### Thermal Expansion
 
@@ -671,6 +777,22 @@ list, while `remove` matches the output list.
 `Generator.remove("extrautils2:generator", ...)` addresses a specific native
 machine. `Generator.removeByGenerator(...)` removes every recipe from that
 machine, while `Generator.removeAll()` affects all supported generator types.
+
+### Railcraft
+
+| Class | Parameter meaning |
+| --- | --- |
+| `BlastFurnace` | `name` is the recipe registry name; `output` and `input` are the item result and ingredient; `time` is processing ticks; `slag` is the slag byproduct count. |
+| `CokeOven` | `name` is the recipe registry name; `output` and `input` are the item result and ingredient; `time` is cooking ticks; `outputFluid` is the optional fluid byproduct. |
+| `RockCrusher` | `name` is the recipe registry name; `outputs` contains weighted item results; `input` is the item ingredient. Each output chance is supplied by `WeightedItemStack`. |
+| `RollingMachine` | `name` is a local ID placed in the `modtweaker` namespace; `inputs` is a shaped matrix or shapeless list; `time` is processing ticks; `output` is the crafted item. |
+| `FluidFuel` | `liquid` is the fuel fluid or fluid stack; `heatValuePerBucket` is Railcraft boiler heat for 1000 mB, not RF or ticks. |
+
+For Blast Furnace, Coke Oven and Rock Crusher, `removeRecipe(name)` uses the
+native registry name. Rolling Machine additions use names such as
+`modtweaker:example_rolling`; its `remove(output)` overload matches the
+complete output stack instead. `IIngredient` inputs accept ore-dictionary
+entries such as `<ore:oreIron>`.
 
 ### Thermal Expansion
 
@@ -820,6 +942,39 @@ ChoppingBoard.addRecipe(IItemStack output, IIngredient input)
 ChoppingBoard.removeByOutput(IItemStack output)
 ChoppingBoard.removeByInput(IIngredient input)
 ChoppingBoard.removeAll()
+```
+
+### Railcraft signatures
+
+```text
+BlastFurnace.addRecipe(String name, IItemStack output, IIngredient input, @Optional int time, @Optional int slag)
+BlastFurnace.removeRecipe(String name)
+BlastFurnace.removeRecipe(IItemStack output, @Optional IIngredient input)
+BlastFurnace.removeAll()
+
+CokeOven.addRecipe(String name, IItemStack output, IIngredient input, @Optional int time, @Optional ILiquidStack outputFluid)
+CokeOven.removeRecipe(String name)
+CokeOven.removeRecipe(IItemStack output, @Optional IIngredient input)
+CokeOven.removeAll()
+
+RockCrusher.addRecipe(String name, WeightedItemStack[] outputs, IIngredient input)
+RockCrusher.removeRecipe(String name)
+RockCrusher.removeRecipe(IItemStack input)
+RockCrusher.removeRecipeByInput(IItemStack input)
+RockCrusher.removeAll()
+
+RollingMachine.addShaped(String name, IItemStack output, IIngredient[][] inputs, @Optional int time)
+RollingMachine.addShapeless(String name, IItemStack output, IIngredient[] inputs, @Optional int time)
+RollingMachine.remove(String name)
+RollingMachine.remove(IItemStack output)
+RollingMachine.removeByOutput(IItemStack output)
+RollingMachine.removeAll()
+
+FluidFuel.addFuel(ILiquidStack liquid, int heatValuePerBucket)
+FluidFuel.addFuel(ILiquidDefinition liquidType, int heatValuePerBucket)
+FluidFuel.removeFuel(ILiquidStack liquid)
+FluidFuel.removeFuel(ILiquidDefinition liquidType)
+FluidFuel.removeAll()
 ```
 
 ### Thermal Expansion signatures
