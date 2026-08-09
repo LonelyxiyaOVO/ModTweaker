@@ -24,6 +24,7 @@ mods.botania.PureDaisy.addRecipe(<minecraft:beacon>, <minecraft:torch>);
 mods.botania.PureDaisy.removeRecipe(<botania:livingwood>);
 
 mods.botania.RuneAltar.addRecipe(<minecraft:apple>, [<minecraft:nether_star>, <minecraft:beacon>, <minecraft:stone>], 40);
+mods.botania.RuneAltar.addRecipe(<minecraft:emerald>, [<ore:rune*B>.reuse(), <minecraft:beacon>, <minecraft:stone>], 40);
 mods.botania.RuneAltar.removeRecipe(<botania:rune>);
 
 mods.botania.Lexicon.addCategory("mtdev");

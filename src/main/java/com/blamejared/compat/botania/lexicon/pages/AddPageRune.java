@@ -9,6 +9,7 @@ import vazkii.botania.common.lexicon.page.*;
 
 import java.util.*;
 
+import static com.blamejared.compat.botania.BotaniaHelper.toRuneAltarInputs;
 import static com.blamejared.mtlib.helpers.InputHelper.*;
 
 public class AddPageRune implements IAction {
@@ -47,7 +48,7 @@ public class AddPageRune implements IAction {
         }
         List<RecipeRuneAltar> recipes = new ArrayList<>();
         for(int i = 0; i < outputs.length; i++) {
-            recipes.add(new RecipeRuneAltar(toStack(outputs[i]), mana[i], toObjects(inputs[i])));
+            recipes.add(new RecipeRuneAltar(toStack(outputs[i]), mana[i], toRuneAltarInputs(inputs[i])));
         }
         LexiconPage page = new PageRuneRecipe(name, recipes);
         lexiconEntry.pages.add(page_number, page);

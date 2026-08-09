@@ -219,12 +219,27 @@ mods.botania.ManaInfusion.removeAll();
 `mods.botania.RuneAltar`, `mods.botania.ElvenTrade`
 
 ```zenscript
+// Normal recipe: all matched inputs are consumed.
 mods.botania.RuneAltar.addRecipe(
     <minecraft:diamond>, [<minecraft:coal>, <minecraft:redstone>], 500
 );
 mods.botania.RuneAltar.removeRecipeByInputs([<minecraft:coal>, <minecraft:redstone>]);
 mods.botania.ElvenTrade.removeAll();
 ```
+
+With a reusable input, add the `.reuse()` transformer explicitly:
+
+```zenscript
+// Reusable recipe: coal is returned after a successful craft.
+mods.botania.RuneAltar.addRecipe(
+    <minecraft:emerald>, [<minecraft:coal>.reuse(), <minecraft:redstone>], 500
+);
+```
+
+`IIngredient.reuse()` is supported for CRT Rune Altar recipes. The matching
+ingredient is returned after a successful craft; normal ingredients continue to
+be consumed. This behavior applies to recipes added through
+`mods.botania.RuneAltar.addRecipe` and does not change native Botania recipes.
 
 ### Orechid and Magnet
 
@@ -837,7 +852,7 @@ Bee species parameters are Forestry allele UIDs such as
 | Parameter | Meaning |
 | --- | --- |
 | `output` | Item stack produced by the Botania recipe. |
-| `input` / `inputs` | Item ingredient(s) consumed by the recipe. |
+| `input` / `inputs` | Item ingredient(s) consumed by the recipe; Rune Altar inputs marked with `.reuse()` are returned after crafting. |
 | `catalyst` | The block or catalyst used by Mana Infusion. |
 | `mana` | Mana cost, not RF and not ticks. |
 | `weight` | Orechid generation weight; larger values make an ore more likely. |
